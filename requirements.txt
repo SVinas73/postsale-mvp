@@ -1,0 +1,7 @@
+fastapi
+uvicorn
+sqlmodel
+groq
+pydantic
+resend
+apscheduler
