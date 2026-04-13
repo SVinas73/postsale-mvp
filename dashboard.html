@@ -1,0 +1,1062 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PostSale — Dashboard</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #ffffff;
+    --bg2: #f7f7f5;
+    --bg3: #f0f0ed;
+    --border: #e5e5e2;
+    --border2: #d4d4d0;
+    --text: #1a1a18;
+    --text2: #6b6b67;
+    --text3: #9b9b97;
+    --red: #dc2626;
+    --red-bg: #fef2f2;
+    --red-border: #fecaca;
+    --orange: #ea580c;
+    --orange-bg: #fff7ed;
+    --orange-border: #fed7aa;
+    --yellow: #ca8a04;
+    --yellow-bg: #fefce8;
+    --yellow-border: #fde68a;
+    --green: #16a34a;
+    --green-bg: #f0fdf4;
+    --green-border: #bbf7d0;
+    --blue: #2563eb;
+    --blue-bg: #eff6ff;
+    --blue-border: #bfdbfe;
+    --purple: #7c3aed;
+    --radius: 10px;
+    --radius-sm: 6px;
+    --shadow: 0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
+    --shadow-md: 0 4px 6px rgba(0,0,0,0.05), 0 2px 4px rgba(0,0,0,0.04);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Inter', sans-serif;
+    background: var(--bg2);
+    color: var(--text);
+    font-size: 14px;
+    line-height: 1.5;
+    min-height: 100vh;
+  }
+
+  /* SIDEBAR */
+  .sidebar {
+    position: fixed;
+    left: 0; top: 0; bottom: 0;
+    width: 220px;
+    background: var(--bg);
+    border-right: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    padding: 0;
+    z-index: 100;
+  }
+
+  .sidebar-logo {
+    padding: 20px 20px 16px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .logo-mark {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+  }
+
+  .logo-icon {
+    width: 28px;
+    height: 28px;
+    background: var(--text);
+    border-radius: 7px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .logo-icon svg { width: 14px; height: 14px; }
+
+  .logo-name {
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--text);
+    letter-spacing: -0.3px;
+  }
+
+  .logo-tagline {
+    font-size: 10px;
+    color: var(--text3);
+    margin-top: 1px;
+    letter-spacing: 0.02em;
+  }
+
+  .sidebar-nav {
+    padding: 12px 10px;
+    flex: 1;
+  }
+
+  .nav-item {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    padding: 8px 10px;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    color: var(--text2);
+    font-size: 13px;
+    font-weight: 500;
+    transition: all 0.15s;
+    margin-bottom: 2px;
+  }
+
+  .nav-item:hover { background: var(--bg2); color: var(--text); }
+  .nav-item.active { background: var(--bg2); color: var(--text); }
+  .nav-item svg { width: 15px; height: 15px; flex-shrink: 0; }
+
+  .nav-section {
+    font-size: 10px;
+    font-weight: 600;
+    color: var(--text3);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    padding: 12px 10px 4px;
+  }
+
+  .sidebar-footer {
+    padding: 12px 10px;
+    border-top: 1px solid var(--border);
+  }
+
+  .lang-toggle {
+    display: flex;
+    background: var(--bg2);
+    border-radius: var(--radius-sm);
+    padding: 3px;
+    gap: 2px;
+  }
+
+  .lang-btn {
+    flex: 1;
+    padding: 5px;
+    border: none;
+    background: transparent;
+    border-radius: 4px;
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--text3);
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+
+  .lang-btn.active {
+    background: var(--bg);
+    color: var(--text);
+    box-shadow: var(--shadow);
+  }
+
+  /* MAIN */
+  .main {
+    margin-left: 220px;
+    min-height: 100vh;
+  }
+
+  .topbar {
+    background: var(--bg);
+    border-bottom: 1px solid var(--border);
+    padding: 0 28px;
+    height: 56px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: sticky;
+    top: 0;
+    z-index: 50;
+  }
+
+  .topbar-title {
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--text);
+    letter-spacing: -0.2px;
+  }
+
+  .topbar-right {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 7px 14px;
+    border-radius: var(--radius-sm);
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.15s;
+    border: 1px solid var(--border);
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Inter', sans-serif;
+  }
+
+  .btn:hover { background: var(--bg2); }
+  .btn svg { width: 14px; height: 14px; }
+
+  .btn-primary {
+    background: var(--text);
+    color: var(--bg);
+    border-color: var(--text);
+  }
+
+  .btn-primary:hover { background: #333; }
+
+  .refresh-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 7px 14px;
+    border-radius: var(--radius-sm);
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    border: 1px solid var(--border);
+    background: var(--bg);
+    color: var(--text2);
+    font-family: 'Inter', sans-serif;
+    transition: all 0.15s;
+  }
+  .refresh-btn:hover { background: var(--bg2); color: var(--text); }
+  .refresh-btn svg { width: 14px; height: 14px; }
+
+  .content { padding: 28px; }
+
+  /* METRIC CARDS */
+  .metrics-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 12px;
+    margin-bottom: 24px;
+  }
+
+  .metric-card {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 16px;
+    box-shadow: var(--shadow);
+  }
+
+  .metric-label {
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--text3);
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+
+  .metric-value {
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--text);
+    letter-spacing: -0.5px;
+    line-height: 1;
+  }
+
+  .metric-card.critico .metric-value { color: var(--red); }
+  .metric-card.alto .metric-value { color: var(--orange); }
+  .metric-card.medio .metric-value { color: var(--yellow); }
+  .metric-card.bajo .metric-value { color: var(--green); }
+
+  .metric-sub {
+    font-size: 11px;
+    color: var(--text3);
+    margin-top: 4px;
+  }
+
+  /* SECTION */
+  .section {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    margin-bottom: 20px;
+    overflow: hidden;
+  }
+
+  .section-header {
+    padding: 16px 20px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .section-title {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text);
+  }
+
+  .section-count {
+    font-size: 12px;
+    color: var(--text3);
+    background: var(--bg2);
+    padding: 2px 8px;
+    border-radius: 20px;
+  }
+
+  /* TABLE */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+
+  thead th {
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--text3);
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    padding: 10px 20px;
+    text-align: left;
+    background: var(--bg2);
+    border-bottom: 1px solid var(--border);
+  }
+
+  tbody tr {
+    border-bottom: 1px solid var(--border);
+    transition: background 0.1s;
+    cursor: pointer;
+  }
+
+  tbody tr:last-child { border-bottom: none; }
+  tbody tr:hover { background: var(--bg2); }
+
+  tbody td {
+    padding: 13px 20px;
+    font-size: 13px;
+    color: var(--text);
+    vertical-align: middle;
+  }
+
+  .client-name {
+    font-weight: 600;
+    color: var(--text);
+    margin-bottom: 1px;
+  }
+
+  .client-plan {
+    font-size: 11px;
+    color: var(--text3);
+  }
+
+  /* BADGES */
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 3px 9px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 600;
+    white-space: nowrap;
+  }
+
+  .badge-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  .badge.critico {
+    background: var(--red-bg);
+    color: var(--red);
+    border: 1px solid var(--red-border);
+  }
+  .badge.critico .badge-dot { background: var(--red); }
+
+  .badge.alto {
+    background: var(--orange-bg);
+    color: var(--orange);
+    border: 1px solid var(--orange-border);
+  }
+  .badge.alto .badge-dot { background: var(--orange); }
+
+  .badge.medio {
+    background: var(--yellow-bg);
+    color: var(--yellow);
+    border: 1px solid var(--yellow-border);
+  }
+  .badge.medio .badge-dot { background: var(--yellow); }
+
+  .badge.bajo {
+    background: var(--green-bg);
+    color: var(--green);
+    border: 1px solid var(--green-border);
+  }
+  .badge.bajo .badge-dot { background: var(--green); }
+
+  .badge.sin {
+    background: var(--bg2);
+    color: var(--text3);
+    border: 1px solid var(--border);
+  }
+
+  /* PROB BAR */
+  .prob-wrap { display: flex; align-items: center; gap: 10px; }
+  .prob-bar {
+    width: 80px;
+    height: 5px;
+    background: var(--bg3);
+    border-radius: 3px;
+    overflow: hidden;
+    flex-shrink: 0;
+  }
+  .prob-fill { height: 100%; border-radius: 3px; transition: width 0.6s ease; }
+  .prob-num { font-size: 12px; font-weight: 600; color: var(--text2); min-width: 30px; }
+
+  /* TENDENCIA */
+  .trend {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 11px;
+    font-weight: 500;
+  }
+  .trend.up { color: var(--red); }
+  .trend.down { color: var(--green); }
+  .trend.flat { color: var(--text3); }
+
+  /* ACTION */
+  .action-text {
+    font-size: 12px;
+    color: var(--text2);
+    max-width: 260px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  /* MODAL */
+  .modal-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.3);
+    z-index: 200;
+    align-items: center;
+    justify-content: center;
+    backdrop-filter: blur(2px);
+  }
+  .modal-overlay.open { display: flex; }
+
+  .modal {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    width: 560px;
+    max-height: 85vh;
+    overflow-y: auto;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.15);
+    animation: modalIn 0.2s ease;
+  }
+
+  @keyframes modalIn {
+    from { opacity: 0; transform: translateY(8px) scale(0.98); }
+    to { opacity: 1; transform: translateY(0) scale(1); }
+  }
+
+  .modal-header {
+    padding: 20px 24px 16px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+  }
+
+  .modal-close {
+    width: 28px;
+    height: 28px;
+    border-radius: 6px;
+    border: 1px solid var(--border);
+    background: var(--bg);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text2);
+    font-size: 16px;
+    flex-shrink: 0;
+    transition: all 0.15s;
+  }
+  .modal-close:hover { background: var(--bg2); }
+
+  .modal-body { padding: 20px 24px; }
+
+  .modal-section { margin-bottom: 20px; }
+  .modal-section-title {
+    font-size: 10px;
+    font-weight: 600;
+    color: var(--text3);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    margin-bottom: 10px;
+  }
+
+  .detail-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    padding: 8px 0;
+    border-bottom: 1px solid var(--border);
+    gap: 16px;
+  }
+  .detail-row:last-child { border-bottom: none; }
+  .detail-key { font-size: 12px; color: var(--text3); flex-shrink: 0; }
+  .detail-val { font-size: 12px; color: var(--text); text-align: right; font-weight: 500; }
+
+  .action-box {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 12px 14px;
+    font-size: 13px;
+    color: var(--text);
+    line-height: 1.6;
+  }
+
+  .history-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 8px 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .history-item:last-child { border-bottom: none; }
+
+  .history-date { font-size: 11px; color: var(--text3); min-width: 90px; font-family: 'JetBrains Mono', monospace; }
+
+  /* LOADING */
+  .loading {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 60px;
+    color: var(--text3);
+    font-size: 13px;
+    gap: 10px;
+  }
+
+  .spinner {
+    width: 16px;
+    height: 16px;
+    border: 2px solid var(--border2);
+    border-top-color: var(--text);
+    border-radius: 50%;
+    animation: spin 0.7s linear infinite;
+  }
+
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  .empty {
+    padding: 48px;
+    text-align: center;
+    color: var(--text3);
+    font-size: 13px;
+  }
+
+  .empty-icon { font-size: 28px; margin-bottom: 10px; }
+
+  /* TOAST */
+  .toast {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    background: var(--text);
+    color: var(--bg);
+    padding: 10px 16px;
+    border-radius: var(--radius-sm);
+    font-size: 13px;
+    font-weight: 500;
+    z-index: 999;
+    opacity: 0;
+    transform: translateY(8px);
+    transition: all 0.2s;
+    pointer-events: none;
+  }
+  .toast.show { opacity: 1; transform: translateY(0); }
+
+  /* REVISION BADGE */
+  .revision-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 10px;
+    font-weight: 600;
+    padding: 2px 7px;
+    border-radius: 20px;
+    background: var(--yellow-bg);
+    color: var(--yellow);
+    border: 1px solid var(--yellow-border);
+  }
+
+  .mono { font-family: 'JetBrains Mono', monospace; font-size: 12px; }
+
+  /* SCORE BAR */
+  .score-wrap { display: flex; align-items: center; gap: 8px; }
+  .score-dots { display: flex; gap: 3px; }
+  .score-dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: var(--bg3);
+  }
+  .score-dot.filled { background: var(--text); }
+  .score-num { font-size: 11px; color: var(--text3); }
+
+  @media (max-width: 900px) {
+    .metrics-grid { grid-template-columns: repeat(3, 1fr); }
+    .sidebar { width: 60px; }
+    .main { margin-left: 60px; }
+    .logo-name, .logo-tagline, .nav-item span, .nav-section, .sidebar-footer { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<aside class="sidebar">
+  <div class="sidebar-logo">
+    <div class="logo-mark">
+      <div class="logo-icon">
+        <svg viewBox="0 0 14 14" fill="none">
+          <path d="M7 1L13 4V10L7 13L1 10V4L7 1Z" fill="white"/>
+        </svg>
+      </div>
+      <div>
+        <div class="logo-name">PostSale</div>
+        <div class="logo-tagline" id="logo-tagline">Churn Intelligence</div>
+      </div>
+    </div>
+  </div>
+
+  <nav class="sidebar-nav">
+    <div class="nav-section" id="nav-section-main">Main</div>
+    <div class="nav-item active" onclick="showView('dashboard')">
+      <svg viewBox="0 0 15 15" fill="none"><rect x="1" y="1" width="5.5" height="5.5" rx="1" fill="currentColor"/><rect x="8.5" y="1" width="5.5" height="5.5" rx="1" fill="currentColor" opacity=".4"/><rect x="1" y="8.5" width="5.5" height="5.5" rx="1" fill="currentColor" opacity=".4"/><rect x="8.5" y="8.5" width="5.5" height="5.5" rx="1" fill="currentColor" opacity=".4"/></svg>
+      <span id="nav-dashboard">Dashboard</span>
+    </div>
+    <div class="nav-item" onclick="showView('clientes')">
+      <svg viewBox="0 0 15 15" fill="none"><circle cx="7.5" cy="4.5" r="2.5" fill="currentColor"/><path d="M1 13c0-3.314 2.91-6 6.5-6s6.5 2.686 6.5 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+      <span id="nav-clientes">Clientes</span>
+    </div>
+  </nav>
+
+  <div class="sidebar-footer">
+    <div class="lang-toggle">
+      <button class="lang-btn active" id="btn-es" onclick="setLang('es')">ES</button>
+      <button class="lang-btn" id="btn-en" onclick="setLang('en')">EN</button>
+    </div>
+  </div>
+</aside>
+
+<!-- MAIN -->
+<main class="main">
+  <div class="topbar">
+    <div class="topbar-title" id="topbar-title">Dashboard</div>
+    <div class="topbar-right">
+      <button class="refresh-btn" onclick="loadAll()">
+        <svg viewBox="0 0 15 15" fill="none"><path d="M1.5 7.5a6 6 0 1 1 1.5 4M1.5 11.5v-4h4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <span id="btn-refresh">Actualizar</span>
+      </button>
+    </div>
+  </div>
+
+  <div class="content">
+
+    <!-- DASHBOARD VIEW -->
+    <div id="view-dashboard">
+      <div class="metrics-grid" id="metrics-grid">
+        <div class="loading"><div class="spinner"></div></div>
+      </div>
+      <div class="section">
+        <div class="section-header">
+          <span class="section-title" id="section-urgentes">Clientes urgentes</span>
+          <span class="section-count" id="urgentes-count">—</span>
+        </div>
+        <div id="urgentes-table"><div class="loading"><div class="spinner"></div></div></div>
+      </div>
+    </div>
+
+    <!-- CLIENTES VIEW -->
+    <div id="view-clientes" style="display:none">
+      <div class="section">
+        <div class="section-header">
+          <span class="section-title" id="section-todos">Todos los clientes</span>
+          <span class="section-count" id="todos-count">—</span>
+        </div>
+        <div id="todos-table"><div class="loading"><div class="spinner"></div></div></div>
+      </div>
+    </div>
+
+  </div>
+</main>
+
+<!-- MODAL FICHA CLIENTE -->
+<div class="modal-overlay" id="modal" onclick="closeModal(event)">
+  <div class="modal" id="modal-content">
+    <div class="modal-header">
+      <div>
+        <div class="client-name" id="modal-name" style="font-size:16px;margin-bottom:4px">—</div>
+        <div style="display:flex;gap:8px;align-items:center">
+          <span id="modal-plan" style="font-size:12px;color:var(--text3)"></span>
+          <span id="modal-badge"></span>
+        </div>
+      </div>
+      <button class="modal-close" onclick="document.getElementById('modal').classList.remove('open')">✕</button>
+    </div>
+    <div class="modal-body" id="modal-body">
+      <div class="loading"><div class="spinner"></div></div>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<script>
+const API = 'http://127.0.0.1:8000';
+let lang = 'es';
+let currentClients = [];
+
+const T = {
+  es: {
+    dashboard: 'Dashboard', clientes: 'Clientes', actualizar: 'Actualizar',
+    urgentes: 'Clientes urgentes', todos: 'Todos los clientes',
+    total: 'Total', criticos: 'Críticos', alto: 'Riesgo alto',
+    medio: 'Riesgo medio', bajo: 'Riesgo bajo',
+    cliente: 'Cliente', riesgo: 'Riesgo', probabilidad: 'Probabilidad',
+    tendencia: 'Tendencia', accion: 'Acción recomendada',
+    analisis: 'Análisis', fecha: 'Fecha', score: 'Confianza IA',
+    intentos: 'Intentos', tiempo: 'Tiempo',
+    sin_analisis: 'Sin análisis', empeorando: '↑ Empeorando',
+    mejorando: '↓ Mejorando', estable: '→ Estable', sin_datos: '—',
+    historial: 'Historial de riesgo', accion_csm: 'Acción para el gestor',
+    detalles: 'Detalles del análisis', revision: 'Revisión manual',
+    cargando: 'Cargando...', sin_clientes: 'No hay clientes registrados.',
+    churn_intelligence: 'Churn Intelligence',
+    nav_main: 'Principal',
+  },
+  en: {
+    dashboard: 'Dashboard', clientes: 'Clients', actualizar: 'Refresh',
+    urgentes: 'Urgent clients', todos: 'All clients',
+    total: 'Total', criticos: 'Critical', alto: 'High risk',
+    medio: 'Medium risk', bajo: 'Low risk',
+    cliente: 'Client', riesgo: 'Risk', probabilidad: 'Probability',
+    tendencia: 'Trend', accion: 'Recommended action',
+    analisis: 'Analysis', fecha: 'Date', score: 'AI confidence',
+    intentos: 'Attempts', tiempo: 'Time',
+    sin_analisis: 'No analysis', empeorando: '↑ Worsening',
+    mejorando: '↓ Improving', estable: '→ Stable', sin_datos: '—',
+    historial: 'Risk history', accion_csm: 'Action for CSM',
+    detalles: 'Analysis details', revision: 'Manual review',
+    cargando: 'Loading...', sin_clientes: 'No clients registered.',
+    churn_intelligence: 'Churn Intelligence',
+    nav_main: 'Main',
+  }
+};
+
+function t(key) { return T[lang][key] || key; }
+
+function setLang(l) {
+  lang = l;
+  document.getElementById('btn-es').classList.toggle('active', l === 'es');
+  document.getElementById('btn-en').classList.toggle('active', l === 'en');
+  updateTexts();
+  renderAll();
+}
+
+function updateTexts() {
+  document.getElementById('logo-tagline').textContent = t('churn_intelligence');
+  document.getElementById('nav-dashboard').textContent = t('dashboard');
+  document.getElementById('nav-clientes').textContent = t('clientes');
+  document.getElementById('btn-refresh').textContent = t('actualizar');
+  document.getElementById('nav-section-main').textContent = t('nav_main');
+}
+
+function showView(view) {
+  document.getElementById('view-dashboard').style.display = view === 'dashboard' ? '' : 'none';
+  document.getElementById('view-clientes').style.display = view === 'clientes' ? '' : 'none';
+  document.getElementById('topbar-title').textContent = t(view === 'dashboard' ? 'dashboard' : 'clientes');
+  document.querySelectorAll('.nav-item').forEach((el, i) => {
+    el.classList.toggle('active', (i === 0 && view === 'dashboard') || (i === 1 && view === 'clientes'));
+  });
+}
+
+function riskClass(nivel) {
+  if (!nivel) return 'sin';
+  const map = { 'Crítico': 'critico', 'Critical': 'critico', 'Alto': 'alto', 'High': 'alto', 'Medio': 'medio', 'Medium': 'medio', 'Bajo': 'bajo', 'Low': 'bajo' };
+  return map[nivel] || 'sin';
+}
+
+function riskLabel(nivel) {
+  if (!nivel) return t('sin_analisis');
+  if (lang === 'en') {
+    const map = { 'Crítico': 'Critical', 'Alto': 'High', 'Medio': 'Medium', 'Bajo': 'Low' };
+    return map[nivel] || nivel;
+  }
+  return nivel;
+}
+
+function probColor(p) {
+  if (p >= 75) return 'var(--red)';
+  if (p >= 50) return 'var(--orange)';
+  if (p >= 25) return 'var(--yellow)';
+  return 'var(--green)';
+}
+
+function trendLabel(trend) {
+  const map = { empeorando: t('empeorando'), mejorando: t('mejorando'), estable: t('estable'), sin_datos: t('sin_datos') };
+  return map[trend] || '—';
+}
+
+function trendClass(trend) {
+  return trend === 'empeorando' ? 'up' : trend === 'mejorando' ? 'down' : 'flat';
+}
+
+function formatDate(iso) {
+  if (!iso) return '—';
+  try {
+    const d = new Date(iso);
+    return d.toLocaleDateString(lang === 'es' ? 'es-AR' : 'en-US', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' });
+  } catch { return iso.slice(0, 16).replace('T', ' '); }
+}
+
+function scoreDots(score) {
+  let html = '<div class="score-wrap"><div class="score-dots">';
+  for (let i = 1; i <= 10; i++) {
+    html += `<div class="score-dot${i <= score ? ' filled' : ''}"></div>`;
+  }
+  html += `</div><span class="score-num">${score}/10</span></div>`;
+  return html;
+}
+
+async function loadAll() {
+  try {
+    const res = await fetch(`${API}/clientes`);
+    if (!res.ok) throw new Error('API error');
+    currentClients = await res.json();
+    renderAll();
+  } catch (e) {
+    showToast(lang === 'es' ? 'Error conectando con la API' : 'Error connecting to API');
+  }
+}
+
+function renderAll() {
+  renderMetrics();
+  renderUrgentes();
+  renderTodos();
+}
+
+function renderMetrics() {
+  const criticos = currentClients.filter(c => c.ultimo_nivel_riesgo === 'Crítico').length;
+  const altos = currentClients.filter(c => c.ultimo_nivel_riesgo === 'Alto').length;
+  const medios = currentClients.filter(c => c.ultimo_nivel_riesgo === 'Medio').length;
+  const bajos = currentClients.filter(c => c.ultimo_nivel_riesgo === 'Bajo').length;
+
+  document.getElementById('metrics-grid').innerHTML = `
+    <div class="metric-card">
+      <div class="metric-label">${t('total')}</div>
+      <div class="metric-value">${currentClients.length}</div>
+      <div class="metric-sub">${t('clientes')}</div>
+    </div>
+    <div class="metric-card critico">
+      <div class="metric-label">${t('criticos')}</div>
+      <div class="metric-value">${criticos}</div>
+      <div class="metric-sub">${lang === 'es' ? 'Acción inmediata' : 'Immediate action'}</div>
+    </div>
+    <div class="metric-card alto">
+      <div class="metric-label">${t('alto')}</div>
+      <div class="metric-value">${altos}</div>
+      <div class="metric-sub">${lang === 'es' ? 'Seguimiento urgente' : 'Urgent follow-up'}</div>
+    </div>
+    <div class="metric-card medio">
+      <div class="metric-label">${t('medio')}</div>
+      <div class="metric-value">${medios}</div>
+      <div class="metric-sub">${lang === 'es' ? 'Monitorear' : 'Monitor'}</div>
+    </div>
+    <div class="metric-card bajo">
+      <div class="metric-label">${t('bajo')}</div>
+      <div class="metric-value">${bajos}</div>
+      <div class="metric-sub">${lang === 'es' ? 'Saludables' : 'Healthy'}</div>
+    </div>`;
+}
+
+function clientTableRow(c) {
+  const rc = riskClass(c.ultimo_nivel_riesgo);
+  const prob = c.ultima_probabilidad_churn;
+  return `<tr onclick="openModal(${c.id})">
+    <td>
+      <div class="client-name">${c.nombre}</div>
+      <div class="client-plan">${c.plan_actual}</div>
+    </td>
+    <td>
+      <span class="badge ${rc}">
+        <span class="badge-dot"></span>
+        ${riskLabel(c.ultimo_nivel_riesgo)}
+      </span>
+    </td>
+    <td>
+      ${prob !== null && prob !== undefined ? `
+      <div class="prob-wrap">
+        <div class="prob-bar"><div class="prob-fill" style="width:${prob}%;background:${probColor(prob)}"></div></div>
+        <span class="prob-num">${prob}%</span>
+      </div>` : '<span style="color:var(--text3)">—</span>'}
+    </td>
+    <td>
+      <div class="action-text">${c.ultima_accion_recomendada || '—'}</div>
+    </td>
+    <td>
+      <span class="mono" style="color:var(--text3)">${formatDate(c.fecha_ultimo_analisis)}</span>
+    </td>
+  </tr>`;
+}
+
+function tableHeader() {
+  return `<thead><tr>
+    <th>${t('cliente')}</th>
+    <th>${t('riesgo')}</th>
+    <th>${t('probabilidad')}</th>
+    <th>${t('accion')}</th>
+    <th>${t('fecha')}</th>
+  </tr></thead>`;
+}
+
+function renderUrgentes() {
+  const urgentes = currentClients.filter(c => ['Crítico','Alto'].includes(c.ultimo_nivel_riesgo));
+  document.getElementById('urgentes-count').textContent = urgentes.length;
+  document.getElementById('section-urgentes').textContent = t('urgentes');
+
+  if (urgentes.length === 0) {
+    document.getElementById('urgentes-table').innerHTML = `<div class="empty"><div class="empty-icon">✓</div>${lang === 'es' ? 'Sin clientes en riesgo alto o crítico.' : 'No clients at high or critical risk.'}</div>`;
+    return;
+  }
+
+  document.getElementById('urgentes-table').innerHTML = `<table>${tableHeader()}<tbody>${urgentes.map(clientTableRow).join('')}</tbody></table>`;
+}
+
+function renderTodos() {
+  document.getElementById('todos-count').textContent = currentClients.length;
+  document.getElementById('section-todos').textContent = t('todos');
+
+  if (currentClients.length === 0) {
+    document.getElementById('todos-table').innerHTML = `<div class="empty"><div class="empty-icon">○</div>${t('sin_clientes')}</div>`;
+    return;
+  }
+
+  document.getElementById('todos-table').innerHTML = `<table>${tableHeader()}<tbody>${currentClients.map(clientTableRow).join('')}</tbody></table>`;
+}
+
+async function openModal(clientId) {
+  document.getElementById('modal').classList.add('open');
+  document.getElementById('modal-body').innerHTML = `<div class="loading"><div class="spinner"></div>${t('cargando')}</div>`;
+
+  const client = currentClients.find(c => c.id === clientId);
+  if (client) {
+    document.getElementById('modal-name').textContent = client.nombre;
+    document.getElementById('modal-plan').textContent = client.plan_actual;
+    const rc = riskClass(client.ultimo_nivel_riesgo);
+    document.getElementById('modal-badge').innerHTML = client.ultimo_nivel_riesgo
+      ? `<span class="badge ${rc}"><span class="badge-dot"></span>${riskLabel(client.ultimo_nivel_riesgo)}</span>` : '';
+  }
+
+  try {
+    const res = await fetch(`${API}/clientes/${clientId}`);
+    const data = await res.json();
+    renderModal(data);
+  } catch {
+    document.getElementById('modal-body').innerHTML = `<div class="empty">${lang === 'es' ? 'Error cargando ficha.' : 'Error loading details.'}</div>`;
+  }
+}
+
+function renderModal(data) {
+  const h = data.historial;
+  const ultimo = h[0];
+
+  let html = '';
+
+  if (ultimo) {
+    html += `<div class="modal-section">
+      <div class="modal-section-title">${t('accion_csm')}</div>
+      <div class="action-box">${ultimo.accion_recomendada}</div>
+    </div>`;
+
+    html += `<div class="modal-section">
+      <div class="modal-section-title">${t('detalles')}</div>
+      <div class="detail-row"><span class="detail-key">${t('riesgo')}</span>
+        <span class="detail-val"><span class="badge ${riskClass(ultimo.nivel_riesgo)}"><span class="badge-dot"></span>${riskLabel(ultimo.nivel_riesgo)}</span></span></div>
+      <div class="detail-row"><span class="detail-key">${t('probabilidad')}</span>
+        <span class="detail-val">${ultimo.probabilidad_churn_porcentaje}%</span></div>
+      <div class="detail-row"><span class="detail-key">${t('score')}</span>
+        <span class="detail-val">${scoreDots(ultimo.score_confianza)}</span></div>
+      <div class="detail-row"><span class="detail-key">${t('tendencia')}</span>
+        <span class="detail-val"><span class="trend ${trendClass(data.tendencia)}">${trendLabel(data.tendencia)}</span></span></div>
+      ${ultimo.requiere_revision_manual ? `<div class="detail-row"><span class="detail-key">${t('revision')}</span>
+        <span class="detail-val"><span class="revision-badge">⚠ ${lang === 'es' ? 'Requerida' : 'Required'}</span></span></div>` : ''}
+    </div>`;
+  }
+
+  if (h.length > 1) {
+    html += `<div class="modal-section">
+      <div class="modal-section-title">${t('historial')} (${h.length})</div>`;
+    h.forEach(item => {
+      html += `<div class="history-item">
+        <span class="history-date">${formatDate(item.fecha)}</span>
+        <span class="badge ${riskClass(item.nivel_riesgo)} " style="font-size:10px">
+          <span class="badge-dot"></span>${riskLabel(item.nivel_riesgo)}
+        </span>
+        <span style="font-size:11px;color:var(--text3)">${item.probabilidad_churn_porcentaje}%</span>
+      </div>`;
+    });
+    html += '</div>';
+  }
+
+  if (!ultimo) {
+    html = `<div class="empty">${t('sin_analisis')}</div>`;
+  }
+
+  document.getElementById('modal-body').innerHTML = html;
+}
+
+function closeModal(e) {
+  if (e.target === document.getElementById('modal')) {
+    document.getElementById('modal').classList.remove('open');
+  }
+}
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 3000);
+}
+
+// Init
+updateTexts();
+loadAll();
+setInterval(loadAll, 30000);
+</script>
+</body>
+</html>
