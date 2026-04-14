@@ -34,6 +34,9 @@ from groq import AsyncGroq
 from pydantic import BaseModel, Field, ValidationError
 from sqlmodel import Field as SQLField
 from sqlmodel import Session, SQLModel, create_engine, select
+from rag_postsale import analizar_con_rag, inicializar_base_vectorial
+
+coleccion_rag = inicializar_base_vectorial()
 
 # ---------------------------------------------------------------------------
 # LOGGING
@@ -761,13 +764,14 @@ async def analizar_cliente(
             detail="Debe enviar al menos una interacción para analizar",
         )
 
-    # Llamar al motor de IA
-    resultado = await analizar_con_ia(
+    # Llamar al motor de IA con RAG
+    resultado = await analizar_con_rag(
         nombre=cliente.nombre,
         plan=cliente.plan_actual.value,
         interacciones=datos.interacciones,
+        coleccion=coleccion_rag,
     )
-
+    
     # Guardar en base de datos
     analisis_db = AnalisisDB(
         cliente_id=cliente_id,

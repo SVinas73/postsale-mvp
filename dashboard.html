@@ -662,6 +662,10 @@
       <svg viewBox="0 0 15 15" fill="none"><circle cx="7.5" cy="4.5" r="2.5" fill="currentColor"/><path d="M1 13c0-3.314 2.91-6 6.5-6s6.5 2.686 6.5 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
       <span id="nav-clientes">Clientes</span>
     </div>
+    <div class="nav-item" onclick="showView('nuevo')">
+      <svg viewBox="0 0 15 15" fill="none"><path d="M7.5 1v13M1 7.5h13" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+      <span id="nav-nuevo">Nuevo análisis</span>
+    </div>
   </nav>
 
   <div class="sidebar-footer">
@@ -701,6 +705,56 @@
     </div>
 
     <!-- CLIENTES VIEW -->
+     <!-- NUEVO ANÁLISIS VIEW -->
+<div id="view-nuevo" style="display:none">
+  <div class="section">
+    <div class="section-header">
+      <span class="section-title" id="section-nuevo">Nuevo análisis</span>
+    </div>
+    <div style="padding:24px;max-width:560px">
+
+      <div style="margin-bottom:20px">
+        <label style="font-size:12px;font-weight:600;color:var(--color-text-secondary);display:block;margin-bottom:6px" id="label-empresa">Empresa</label>
+        <input type="text" id="input-nombre" placeholder="Ej: Distribuidora del Norte S.A." style="width:100%">
+      </div>
+
+      <div style="margin-bottom:20px">
+        <label style="font-size:12px;font-weight:600;color:var(--color-text-secondary);display:block;margin-bottom:6px" id="label-plan">Plan</label>
+        <select id="input-plan" style="width:100%">
+          <option value="Starter">Starter</option>
+          <option value="Professional" selected>Professional</option>
+          <option value="Enterprise">Enterprise</option>
+        </select>
+      </div>
+
+      <div style="margin-bottom:20px">
+        <label style="font-size:12px;font-weight:600;color:var(--color-text-secondary);display:block;margin-bottom:6px" id="label-tipo">Tipo de interacción</label>
+        <select id="input-tipo" style="width:100%">
+          <option value="email">Email</option>
+          <option value="ticket">Ticket de soporte</option>
+          <option value="inactividad_login">Inactividad / Sin login</option>
+        </select>
+      </div>
+
+      <div style="margin-bottom:20px">
+        <label style="font-size:12px;font-weight:600;color:var(--color-text-secondary);display:block;margin-bottom:6px" id="label-dias">Días desde última conexión</label>
+        <input type="number" id="input-dias" value="0" min="0" style="width:100%">
+      </div>
+
+      <div style="margin-bottom:24px">
+        <label style="font-size:12px;font-weight:600;color:var(--color-text-secondary);display:block;margin-bottom:6px" id="label-mensaje">Mensaje o descripción de la interacción</label>
+        <textarea id="input-mensaje" rows="5" placeholder="Pegá el texto del email, ticket o describí la situación del cliente..." style="width:100%;font-family:var(--font-sans);font-size:14px;padding:10px 14px;border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-md);background:var(--color-background-primary);color:var(--color-text-primary);resize:vertical"></textarea>
+      </div>
+
+      <button onclick="analizarNuevo()" id="btn-analizar" class="btn btn-primary" style="width:100%;justify-content:center;padding:10px">
+        <svg viewBox="0 0 15 15" fill="none" style="width:14px;height:14px"><path d="M7.5 1L14 7.5L7.5 14M1 7.5h13" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <span id="btn-analizar-text">Analizar riesgo</span>
+      </button>
+
+      <div id="resultado-nuevo" style="margin-top:24px;display:none"></div>
+    </div>
+  </div>
+</div>
     <div id="view-clientes" style="display:none">
       <div class="section">
         <div class="section-header">
@@ -794,11 +848,20 @@ function updateTexts() {
   document.getElementById('nav-clientes').textContent = t('clientes');
   document.getElementById('btn-refresh').textContent = t('actualizar');
   document.getElementById('nav-section-main').textContent = t('nav_main');
+  document.getElementById('nav-nuevo').textContent = lang === 'es' ? 'Nuevo análisis' : 'New analysis';
+document.getElementById('section-nuevo').textContent = lang === 'es' ? 'Nuevo análisis' : 'New analysis';
+document.getElementById('label-empresa').textContent = lang === 'es' ? 'Empresa' : 'Company';
+document.getElementById('label-plan').textContent = lang === 'es' ? 'Plan' : 'Plan';
+document.getElementById('label-tipo').textContent = lang === 'es' ? 'Tipo de interacción' : 'Interaction type';
+document.getElementById('label-dias').textContent = lang === 'es' ? 'Días desde última conexión' : 'Days since last login';
+document.getElementById('label-mensaje').textContent = lang === 'es' ? 'Mensaje o descripción' : 'Message or description';
+document.getElementById('btn-analizar-text').textContent = lang === 'es' ? 'Analizar riesgo' : 'Analyze risk';
 }
 
 function showView(view) {
   document.getElementById('view-dashboard').style.display = view === 'dashboard' ? '' : 'none';
   document.getElementById('view-clientes').style.display = view === 'clientes' ? '' : 'none';
+  document.getElementById('view-nuevo').style.display = view === 'nuevo' ? '' : 'none';
   document.getElementById('topbar-title').textContent = t(view === 'dashboard' ? 'dashboard' : 'clientes');
   document.querySelectorAll('.nav-item').forEach((el, i) => {
     el.classList.toggle('active', (i === 0 && view === 'dashboard') || (i === 1 && view === 'clientes'));
@@ -1051,6 +1114,79 @@ function showToast(msg) {
   t.textContent = msg;
   t.classList.add('show');
   setTimeout(() => t.classList.remove('show'), 3000);
+}
+
+async function analizarNuevo() {
+  const nombre = document.getElementById('input-nombre').value.trim();
+  const plan = document.getElementById('input-plan').value;
+  const tipo = document.getElementById('input-tipo').value;
+  const dias = parseInt(document.getElementById('input-dias').value) || 0;
+  const mensaje = document.getElementById('input-mensaje').value.trim();
+
+  if (!nombre || !mensaje) {
+    showToast(lang === 'es' ? 'Completá el nombre y el mensaje' : 'Fill in the name and message');
+    return;
+  }
+
+  const btn = document.getElementById('btn-analizar');
+  const btnText = document.getElementById('btn-analizar-text');
+  btn.disabled = true;
+  btnText.textContent = lang === 'es' ? 'Analizando...' : 'Analyzing...';
+
+  try {
+    // Paso 1: registrar cliente
+    const clienteRes = await fetch(`${API}/clientes`, {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({nombre, plan_actual: plan}),
+    });
+    const clienteData = await clienteRes.json();
+    const clienteId = clienteData.cliente_id;
+
+    // Paso 2: analizar
+    const analisisRes = await fetch(`${API}/analizar/${clienteId}`, {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({
+        interacciones: [{
+          tipo_interaccion: tipo,
+          texto_mensaje: mensaje,
+          dias_desde_ultima_conexion: dias,
+        }]
+      }),
+    });
+    const resultado = await analisisRes.json();
+
+    // Mostrar resultado
+    const rc = riskClass(resultado.nivel_riesgo);
+    const emoji = {'Crítico':'🔴','Alto':'🟠','Medio':'🟡','Bajo':'🟢'}[resultado.nivel_riesgo] || '⚪';
+    document.getElementById('resultado-nuevo').style.display = '';
+    document.getElementById('resultado-nuevo').innerHTML = `
+      <div class="section" style="margin:0">
+        <div style="padding:20px 24px;border-bottom:0.5px solid var(--color-border-tertiary);display:flex;align-items:center;gap:12px">
+          <span class="badge ${rc}"><span class="badge-dot"></span>${riskLabel(resultado.nivel_riesgo)}</span>
+          <span style="font-size:20px;font-weight:700;color:var(--color-text-primary)">${resultado.probabilidad_churn_porcentaje}%</span>
+          <span style="font-size:13px;color:var(--color-text-secondary)">${lang==='es'?'probabilidad de cancelación':'churn probability'}</span>
+        </div>
+        <div style="padding:20px 24px">
+          <div style="font-size:10px;font-weight:600;color:var(--color-text-secondary);letter-spacing:.06em;text-transform:uppercase;margin-bottom:8px">${lang==='es'?'Causa detectada':'Detected cause'}</div>
+          <p style="font-size:14px;color:var(--color-text-primary);margin:0 0 20px;line-height:1.6">${resultado.razon_principal}</p>
+          <div style="font-size:10px;font-weight:600;color:var(--color-text-secondary);letter-spacing:.06em;text-transform:uppercase;margin-bottom:8px">${lang==='es'?'Acción recomendada':'Recommended action'}</div>
+          <div style="background:var(--color-background-secondary);border-left:3px solid var(--color-border-${rc==='critico'?'danger':rc==='alto'?'warning':'success'});padding:14px 16px;border-radius:0 var(--border-radius-md) var(--border-radius-md) 0;font-size:13px;color:var(--color-text-primary);line-height:1.6">${resultado.accion_recomendada_para_el_gestor}</div>
+          <div style="margin-top:16px;font-size:12px;color:var(--color-text-secondary)">${lang==='es'?'Confianza IA':'AI confidence'}: ${resultado.score_confianza}/10 · ${resultado.intentos_realizados} ${lang==='es'?'intento':'attempt'}${resultado.intentos_realizados>1?'s':''} · ${resultado.tiempo_procesamiento_segundos}s</div>
+        </div>
+      </div>`;
+
+    // Recargar lista de clientes
+    await loadAll();
+    showToast(lang === 'es' ? 'Análisis completado' : 'Analysis complete');
+
+  } catch(e) {
+    showToast(lang === 'es' ? 'Error al analizar' : 'Analysis error');
+  } finally {
+    btn.disabled = false;
+    btnText.textContent = lang === 'es' ? 'Analizar riesgo' : 'Analyze risk';
+  }
 }
 
 // Init
