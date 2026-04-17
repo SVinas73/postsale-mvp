@@ -970,7 +970,7 @@ function renderMetrics() {
 function clientTableRow(c) {
   const rc = riskClass(c.ultimo_nivel_riesgo);
   const prob = c.ultima_probabilidad_churn;
-  return `<tr onclick="openModal(${c.id})">
+  return `<tr onclick="abrirHistorial(${c.id})">
     <td>
       <div class="client-name">${c.nombre}</div>
       <div class="client-plan">${c.plan_actual}</div>
@@ -1187,6 +1187,397 @@ async function analizarNuevo() {
     btn.disabled = false;
     btnText.textContent = lang === 'es' ? 'Analizar riesgo' : 'Analyze risk';
   }
+}
+
+/**
+ * PostSale — Módulo de Scoring Histórico
+ * ========================================
+ * Gráfico de evolución del riesgo por cliente.
+ * 
+ * Integración:
+ *   1. Copiá este contenido dentro del <script> de dashboard.html
+ *   2. Agregá el botón de historial en la tabla de clientes
+ *   3. El gráfico usa Chart.js (ya incluido via CDN)
+ * 
+ * Uso:
+ *   abrirHistorial(clienteId) — abre el modal con el gráfico
+ */
+
+// ─── CONFIGURACIÓN DEL GRÁFICO ────────────────────────────────
+
+const COLORES_RIESGO = {
+  'Bajo':    { bg: '#16a34a', light: '#f0fdf4', border: '#bbf7d0' },
+  'Medio':   { bg: '#ca8a04', light: '#fefce8', border: '#fde68a' },
+  'Alto':    { bg: '#ea580c', light: '#fff7ed', border: '#fed7aa' },
+  'Crítico': { bg: '#dc2626', light: '#fef2f2', border: '#fecaca' },
+};
+
+const NIVEL_A_NUMERO = { 'Bajo': 1, 'Medio': 2, 'Alto': 3, 'Crítico': 4 };
+const NUMERO_A_NIVEL = { 1: 'Bajo', 2: 'Medio', 3: 'Alto', 4: 'Crítico' };
+
+let chartInstance = null;
+
+// ─── MODAL DE HISTORIAL ───────────────────────────────────────
+
+function crearModalHistorial() {
+  if (document.getElementById('modal-historial')) return;
+
+  const modal = document.createElement('div');
+  modal.id = 'modal-historial';
+  modal.style.cssText = `
+    display:none;position:fixed;inset:0;
+    background:rgba(0,0,0,0.3);z-index:300;
+    align-items:center;justify-content:center;
+    backdrop-filter:blur(2px);
+  `;
+
+  modal.innerHTML = `
+    <div style="
+      background:var(--color-background-primary);
+      border:1px solid var(--color-border-tertiary);
+      border-radius:14px;width:680px;max-width:95vw;
+      max-height:85vh;overflow-y:auto;
+      box-shadow:0 20px 60px rgba(0,0,0,0.15);
+    ">
+      <div style="
+        padding:20px 24px 16px;
+        border-bottom:1px solid var(--color-border-tertiary);
+        display:flex;justify-content:space-between;align-items:center;
+        position:sticky;top:0;background:var(--color-background-primary);
+        z-index:1;
+      ">
+        <div>
+          <div id="hist-nombre" style="font-size:16px;font-weight:500;color:var(--color-text-primary)">—</div>
+          <div id="hist-plan" style="font-size:12px;color:var(--color-text-secondary);margin-top:2px"></div>
+        </div>
+        <button onclick="cerrarHistorial()" style="
+          width:28px;height:28px;border-radius:6px;
+          border:1px solid var(--color-border-tertiary);
+          background:var(--color-background-primary);
+          cursor:pointer;font-size:16px;color:var(--color-text-secondary);
+          display:flex;align-items:center;justify-content:center;
+        ">✕</button>
+      </div>
+
+      <div style="padding:20px 24px">
+
+        <!-- MÉTRICAS RESUMEN -->
+        <div id="hist-metricas" style="
+          display:grid;grid-template-columns:repeat(4,1fr);
+          gap:10px;margin-bottom:24px;
+        "></div>
+
+        <!-- GRÁFICO -->
+        <div style="margin-bottom:24px">
+          <div style="
+            font-size:10px;font-weight:600;color:var(--color-text-secondary);
+            letter-spacing:.06em;text-transform:uppercase;margin-bottom:12px;
+          " id="hist-titulo-grafico">Evolución del riesgo</div>
+          <div style="position:relative;height:220px;background:var(--color-background-secondary);border-radius:8px;padding:16px">
+            <canvas id="canvas-historial"></canvas>
+          </div>
+        </div>
+
+        <!-- TENDENCIA -->
+        <div id="hist-tendencia-box" style="
+          padding:12px 16px;border-radius:8px;
+          border:1px solid var(--color-border-tertiary);
+          margin-bottom:24px;display:flex;align-items:center;gap:12px;
+        ">
+          <div id="hist-tendencia-icon" style="font-size:20px"></div>
+          <div>
+            <div id="hist-tendencia-label" style="font-size:13px;font-weight:500;color:var(--color-text-primary)"></div>
+            <div id="hist-tendencia-sub" style="font-size:12px;color:var(--color-text-secondary)"></div>
+          </div>
+        </div>
+
+        <!-- TABLA DE HISTORIAL -->
+        <div style="
+          font-size:10px;font-weight:600;color:var(--color-text-secondary);
+          letter-spacing:.06em;text-transform:uppercase;margin-bottom:10px;
+        " id="hist-titulo-tabla">Historial completo</div>
+        <div id="hist-tabla"></div>
+
+      </div>
+    </div>`;
+
+  modal.addEventListener('click', (e) => {
+    if (e.target === modal) cerrarHistorial();
+  });
+
+  document.body.appendChild(modal);
+}
+
+// ─── ABRIR HISTORIAL ──────────────────────────────────────────
+
+async function abrirHistorial(clienteId) {
+  crearModalHistorial();
+
+  const modal = document.getElementById('modal-historial');
+  modal.style.display = 'flex';
+
+  // Cargar Chart.js si no está
+  if (!window.Chart) {
+    await new Promise((resolve) => {
+      const script = document.createElement('script');
+      script.src = 'https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js';
+      script.onload = resolve;
+      document.head.appendChild(script);
+    });
+  }
+
+  try {
+    const res = await fetch(`${API}/clientes/${clienteId}`);
+    const data = await res.json();
+    renderHistorial(data);
+  } catch (e) {
+    console.error('Error cargando historial:', e);
+  }
+}
+
+function cerrarHistorial() {
+  const modal = document.getElementById('modal-historial');
+  if (modal) modal.style.display = 'none';
+  if (chartInstance) {
+    chartInstance.destroy();
+    chartInstance = null;
+  }
+}
+
+// ─── RENDERIZAR HISTORIAL ─────────────────────────────────────
+
+function renderHistorial(data) {
+  const cliente = data.cliente;
+  const historial = data.historial || [];
+  const tendencia = data.tendencia;
+
+  // Nombre y plan
+  document.getElementById('hist-nombre').textContent = cliente.nombre;
+  document.getElementById('hist-plan').textContent = `Plan ${cliente.plan_actual} · Registrado ${formatDate(cliente.fecha_registro)}`;
+
+  // Métricas resumen
+  const ultimo = historial[0];
+  const rc = ultimo ? riskClass(ultimo.nivel_riesgo) : 'sin';
+  const colorActual = COLORES_RIESGO[ultimo?.nivel_riesgo] || { bg: '#888', light: '#f5f5f5', border: '#ddd' };
+
+  const maxProb = historial.length ? Math.max(...historial.map(h => h.probabilidad_churn_porcentaje)) : 0;
+  const minProb = historial.length ? Math.min(...historial.map(h => h.probabilidad_churn_porcentaje)) : 0;
+  const avgScore = historial.length ? Math.round(historial.reduce((a, h) => a + h.score_confianza, 0) / historial.length) : 0;
+
+  document.getElementById('hist-metricas').innerHTML = `
+    ${metricaCard('Riesgo actual', ultimo ? riskLabel(ultimo.nivel_riesgo) : '—', colorActual.bg)}
+    ${metricaCard('Prob. actual', ultimo ? `${ultimo.probabilidad_churn_porcentaje}%` : '—', colorActual.bg)}
+    ${metricaCard('Pico máximo', `${maxProb}%`, '#6b6b67')}
+    ${metricaCard('Análisis totales', historial.length, '#6b6b67')}
+  `;
+
+  // Tendencia
+  const tendencias = {
+    empeorando: { icon: '↑', label: lang === 'es' ? 'Riesgo en aumento' : 'Increasing risk', sub: lang === 'es' ? 'El cliente empeoró respecto al análisis anterior' : 'Client worsened vs previous analysis', color: '#dc2626', bg: '#fef2f2' },
+    mejorando:  { icon: '↓', label: lang === 'es' ? 'Riesgo en descenso' : 'Decreasing risk', sub: lang === 'es' ? 'El cliente mejoró respecto al análisis anterior' : 'Client improved vs previous analysis', color: '#16a34a', bg: '#f0fdf4' },
+    estable:    { icon: '→', label: lang === 'es' ? 'Riesgo estable' : 'Stable risk', sub: lang === 'es' ? 'Sin cambios respecto al análisis anterior' : 'No change vs previous analysis', color: '#ca8a04', bg: '#fefce8' },
+    sin_datos:  { icon: '○', label: lang === 'es' ? 'Sin datos suficientes' : 'Insufficient data', sub: lang === 'es' ? 'Se necesitan al menos 2 análisis para ver tendencia' : 'At least 2 analyses needed for trend', color: '#6b6b67', bg: '#f7f7f5' },
+  };
+
+  const t = tendencias[tendencia] || tendencias.sin_datos;
+  const tBox = document.getElementById('hist-tendencia-box');
+  tBox.style.background = t.bg;
+  tBox.style.borderColor = t.color + '40';
+  document.getElementById('hist-tendencia-icon').textContent = t.icon;
+  document.getElementById('hist-tendencia-label').textContent = t.label;
+  document.getElementById('hist-tendencia-label').style.color = t.color;
+  document.getElementById('hist-tendencia-sub').textContent = t.sub;
+
+  // Gráfico
+  renderGrafico(historial);
+
+  // Tabla
+  renderTablaHistorial(historial);
+}
+
+function metricaCard(label, valor, color) {
+  return `
+    <div style="
+      background:var(--color-background-secondary);
+      border-radius:8px;padding:12px 14px;
+    ">
+      <div style="font-size:10px;font-weight:600;color:var(--color-text-secondary);letter-spacing:.05em;text-transform:uppercase;margin-bottom:6px">${label}</div>
+      <div style="font-size:20px;font-weight:700;color:${color};line-height:1">${valor}</div>
+    </div>`;
+}
+
+// ─── GRÁFICO DE EVOLUCIÓN ─────────────────────────────────────
+
+function renderGrafico(historial) {
+  if (chartInstance) {
+    chartInstance.destroy();
+    chartInstance = null;
+  }
+
+  const canvas = document.getElementById('canvas-historial');
+  if (!canvas || !window.Chart) return;
+
+  // Ordenar cronológicamente (más antiguo primero)
+  const datos = [...historial].reverse();
+
+  const labels = datos.map(h => {
+    try {
+      const d = new Date(h.fecha);
+      return d.toLocaleDateString(lang === 'es' ? 'es-AR' : 'en-US', { day: '2-digit', month: 'short' });
+    } catch { return h.fecha.slice(0, 10); }
+  });
+
+  const valores = datos.map(h => NIVEL_A_NUMERO[h.nivel_riesgo] || 0);
+  const probabilidades = datos.map(h => h.probabilidad_churn_porcentaje);
+
+  const coloresPuntos = datos.map(h => COLORES_RIESGO[h.nivel_riesgo]?.bg || '#888');
+
+  const isDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+  const gridColor = isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.06)';
+  const textColor = isDark ? '#9b9b97' : '#6b6b67';
+
+  chartInstance = new Chart(canvas, {
+    type: 'line',
+    data: {
+      labels,
+      datasets: [
+        {
+          label: lang === 'es' ? 'Nivel de riesgo' : 'Risk level',
+          data: valores,
+          borderColor: '#1a1a18',
+          backgroundColor: 'transparent',
+          pointBackgroundColor: coloresPuntos,
+          pointBorderColor: coloresPuntos,
+          pointRadius: 6,
+          pointHoverRadius: 8,
+          borderWidth: 2,
+          tension: 0.3,
+          yAxisID: 'y',
+        },
+        {
+          label: lang === 'es' ? 'Prob. churn %' : 'Churn prob %',
+          data: probabilidades,
+          borderColor: '#dc2626',
+          backgroundColor: 'rgba(220,38,38,0.06)',
+          pointBackgroundColor: '#dc2626',
+          pointBorderColor: '#dc2626',
+          pointRadius: 4,
+          borderWidth: 1.5,
+          borderDash: [4, 4],
+          tension: 0.3,
+          yAxisID: 'y2',
+          fill: true,
+        },
+      ],
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      interaction: { mode: 'index', intersect: false },
+      plugins: {
+        legend: {
+          position: 'bottom',
+          labels: {
+            color: textColor,
+            font: { size: 11 },
+            boxWidth: 12,
+            padding: 16,
+          },
+        },
+        tooltip: {
+          callbacks: {
+            label: (ctx) => {
+              if (ctx.datasetIndex === 0) {
+                return ` ${NUMERO_A_NIVEL[ctx.parsed.y] || ctx.parsed.y}`;
+              }
+              return ` ${ctx.parsed.y}%`;
+            },
+          },
+        },
+      },
+      scales: {
+        x: {
+          grid: { color: gridColor },
+          ticks: { color: textColor, font: { size: 11 } },
+        },
+        y: {
+          position: 'left',
+          min: 0, max: 5,
+          grid: { color: gridColor },
+          ticks: {
+            color: textColor,
+            font: { size: 11 },
+            stepSize: 1,
+            callback: (v) => NUMERO_A_NIVEL[v] || '',
+          },
+        },
+        y2: {
+          position: 'right',
+          min: 0, max: 100,
+          grid: { display: false },
+          ticks: {
+            color: '#dc2626',
+            font: { size: 10 },
+            callback: (v) => `${v}%`,
+          },
+        },
+      },
+    },
+  });
+}
+
+// ─── TABLA DE HISTORIAL ───────────────────────────────────────
+
+function renderTablaHistorial(historial) {
+  if (!historial.length) {
+    document.getElementById('hist-tabla').innerHTML = `
+      <div style="padding:24px;text-align:center;color:var(--color-text-secondary);font-size:13px">
+        ${lang === 'es' ? 'Sin análisis registrados' : 'No analyses recorded'}
+      </div>`;
+    return;
+  }
+
+  const filas = historial.map(h => {
+    const rc = riskClass(h.nivel_riesgo);
+    const dots = Array.from({length: 10}, (_, i) =>
+      `<div style="width:6px;height:6px;border-radius:50%;background:${i < h.score_confianza ? 'var(--color-text-primary)' : 'var(--color-border-tertiary)'};flex-shrink:0"></div>`
+    ).join('');
+
+    return `
+      <tr style="border-bottom:1px solid var(--color-border-tertiary)">
+        <td style="padding:10px 14px">
+          <span style="font-size:11px;font-family:var(--font-mono);color:var(--color-text-secondary)">${formatDate(h.fecha)}</span>
+        </td>
+        <td style="padding:10px 14px">
+          <span class="badge ${rc}"><span class="badge-dot"></span>${riskLabel(h.nivel_riesgo)}</span>
+        </td>
+        <td style="padding:10px 14px;font-size:13px;font-weight:600;color:${COLORES_RIESGO[h.nivel_riesgo]?.bg || '#888'}">
+          ${h.probabilidad_churn_porcentaje}%
+        </td>
+        <td style="padding:10px 14px">
+          <div style="display:flex;gap:2px;align-items:center">${dots}</div>
+        </td>
+        <td style="padding:10px 14px;font-size:12px;color:var(--color-text-secondary);max-width:200px">
+          <div style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${h.razon_principal}</div>
+        </td>
+        ${h.requiere_revision_manual ? `<td style="padding:10px 14px"><span style="font-size:10px;font-weight:600;color:var(--color-text-warning);background:var(--color-background-warning);padding:2px 7px;border-radius:20px">⚠ Rev.</span></td>` : '<td></td>'}
+      </tr>`;
+  }).join('');
+
+  document.getElementById('hist-tabla').innerHTML = `
+    <table style="width:100%;border-collapse:collapse;border:1px solid var(--color-border-tertiary);border-radius:8px;overflow:hidden">
+      <thead>
+        <tr style="background:var(--color-background-secondary)">
+          <th style="padding:8px 14px;text-align:left;font-size:10px;font-weight:600;color:var(--color-text-secondary);letter-spacing:.05em;text-transform:uppercase">${lang==='es'?'Fecha':'Date'}</th>
+          <th style="padding:8px 14px;text-align:left;font-size:10px;font-weight:600;color:var(--color-text-secondary);letter-spacing:.05em;text-transform:uppercase">${lang==='es'?'Riesgo':'Risk'}</th>
+          <th style="padding:8px 14px;text-align:left;font-size:10px;font-weight:600;color:var(--color-text-secondary);letter-spacing:.05em;text-transform:uppercase">${lang==='es'?'Prob.':'Prob.'}</th>
+          <th style="padding:8px 14px;text-align:left;font-size:10px;font-weight:600;color:var(--color-text-secondary);letter-spacing:.05em;text-transform:uppercase">${lang==='es'?'Confianza':'Confidence'}</th>
+          <th style="padding:8px 14px;text-align:left;font-size:10px;font-weight:600;color:var(--color-text-secondary);letter-spacing:.05em;text-transform:uppercase">${lang==='es'?'Causa':'Cause'}</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>${filas}</tbody>
+    </table>`;
 }
 
 // Init

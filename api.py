@@ -1,14 +1,20 @@
 """
-PostSale MVP — Fase 2: API REST
-================================
+PostSale MVP — Fase 2: API REST + Sistema de Tareas
+=====================================================
 Backend completo con FastAPI + SQLite para el motor de churn.
 
-Endpoints:
+Endpoints base:
   POST /clientes          — registra un cliente nuevo
   POST /analizar/{id}     — analiza el riesgo de un cliente
   GET  /clientes          — lista todos los clientes con su riesgo actual
   GET  /clientes/{id}     — ficha completa de un cliente con historial
   GET  /dashboard         — resumen ejecutivo para el gestor
+
+Endpoints de tareas:
+  GET    /tareas              — lista tareas (filtrable por estado)
+  PATCH  /tareas/{id}         — actualiza una tarea
+  GET    /tareas/resumen      — estadísticas de tareas
+  DELETE /tareas/{id}         — descarta una tarea
 
 Uso:
     1. $env:GROQ_API_KEY="gsk_tu-clave"
@@ -16,7 +22,7 @@ Uso:
     3. uvicorn api:app --reload
 
 Autor: PostSale Engineering
-Versión: 0.3.0 (Fase 2 — API REST)
+Versión: 0.7.0 (Sistema de Tareas)
 """
 
 import asyncio
@@ -65,7 +71,7 @@ CONFIG = {
 DATABASE_URL = "sqlite:///postsale.db"
 
 # ---------------------------------------------------------------------------
-# MODELOS DE BASE DE DATOS (SQLModel = Pydantic + SQLite en uno)
+# MODELOS DE BASE DE DATOS
 # ---------------------------------------------------------------------------
 
 
@@ -80,6 +86,13 @@ class NivelRiesgo(str, Enum):
     MEDIO = "Medio"
     ALTO = "Alto"
     CRITICO = "Crítico"
+
+
+class TareaEstado(str, Enum):
+    PENDIENTE = "pendiente"
+    EN_CURSO = "en_curso"
+    COMPLETADA = "completada"
+    DESCARTADA = "descartada"
 
 
 class ClienteDB(SQLModel, table=True):
@@ -120,8 +133,32 @@ class AnalisisDB(SQLModel, table=True):
     interacciones_json: str  # guardamos las señales usadas para este análisis
 
 
+class TareaDB(SQLModel, table=True):
+    """
+    Tabla de tareas para gestores de cuenta.
+    Cada análisis de riesgo Alto o Crítico genera una tarea automática.
+    El gestor registra qué hizo y el resultado real.
+    """
+    __tablename__ = "tareas"
+
+    id: Optional[int] = SQLField(default=None, primary_key=True)
+    cliente_id: int = SQLField(foreign_key="clientes.id")
+    analisis_id: int = SQLField(foreign_key="analisis.id")
+    nivel_riesgo: str
+    accion_sugerida: str           # lo que sugirió la IA
+    accion_tomada: Optional[str] = None   # lo que hizo el gestor
+    resultado_real: Optional[str] = None  # qué pasó realmente
+    estado: str = "pendiente"      # pendiente | en_curso | completada | descartada
+    fecha_creacion: str = SQLField(
+        default_factory=lambda: datetime.now().isoformat()
+    )
+    fecha_cierre: Optional[str] = None
+    gestor: Optional[str] = None   # nombre del gestor asignado
+    notas: Optional[str] = None    # notas adicionales del gestor
+
+
 # ---------------------------------------------------------------------------
-# MODELOS DE REQUEST / RESPONSE (lo que recibe y devuelve la API)
+# MODELOS DE REQUEST / RESPONSE
 # ---------------------------------------------------------------------------
 
 
@@ -188,28 +225,35 @@ class DashboardResponse(BaseModel):
     clientes_urgentes: list[ClienteResumen]
 
 
+class TareaInput(BaseModel):
+    """Datos para actualizar una tarea."""
+    accion_tomada: Optional[str] = None
+    resultado_real: Optional[str] = None
+    estado: Optional[str] = None
+    gestor: Optional[str] = None
+    notas: Optional[str] = None
+
+
+class TareaResponse(BaseModel):
+    """Respuesta de una tarea."""
+    id: int
+    cliente_id: int
+    cliente_nombre: str
+    analisis_id: int
+    nivel_riesgo: str
+    accion_sugerida: str
+    accion_tomada: Optional[str]
+    resultado_real: Optional[str]
+    estado: str
+    fecha_creacion: str
+    fecha_cierre: Optional[str]
+    gestor: Optional[str]
+    notas: Optional[str]
+
+
 # ---------------------------------------------------------------------------
-# MOTOR DE IA (igual que Fase 1, reutilizado)
+# PROMPT DEL SISTEMA
 # ---------------------------------------------------------------------------
-
-"""
-PostSale — Prompt Mejorado con 50 Escenarios Sintéticos B2B
-=============================================================
-Reemplaza PROMPT_SISTEMA en api.py por esta versión mejorada.
-
-Categorías cubiertas:
-  1. Muerte silenciosa (silent churn)
-  2. Disonancia técnico-administrativa
-  3. Ventana contractual crítica
-  4. Señales de migración activa
-  5. Fricción técnica reiterada
-  6. Expansión vs contracción de uso
-  7. Cambios organizacionales internos
-  8. Señales positivas genuinas
-
-Autor: PostSale Engineering
-Versión: 0.5.0 (Prompt Mejorado)
-"""
 
 PROMPT_SISTEMA = """Eres PostSale-AI, el motor más avanzado del mundo en \
 detección de fricción operativa y predicción de churn B2B. Tu especialidad \
@@ -422,7 +466,7 @@ Señal: "Encontramos una forma de usar el módulo de reportes para gestionar nue
 [EU-05] Cliente en plan básico que consistentemente supera los límites.
 Señal: Tercer mes consecutivo rozando el límite de registros del plan Starter.
 → {"nivel_riesgo":"Bajo","probabilidad_churn_porcentaje":12,
-"razan_principal":"Uso intensivo del plan básico — oportunidad de upgrade antes de que los límites generen fricción",
+"razon_principal":"Uso intensivo del plan básico — oportunidad de upgrade antes de que los límites generen fricción",
 "accion_recomendada_para_el_gestor":"Proactivamente ofrecer upgrade antes de que lleguen al límite. Calcular el costo adicional vs el costo de perder datos o funcionalidad. El upgrade proactivo tiene 60% más de conversión que el reactivo."}
 
 ━━━ CATEGORÍA 7: CAMBIOS ORGANIZACIONALES INTERNOS ━━━
@@ -468,7 +512,7 @@ Señal: "Le mencioné su herramienta a dos colegas de otra empresa. Los van a co
 [SP-02] Cliente publica caso de éxito o menciona la herramienta públicamente.
 Señal: "Publicamos un post en LinkedIn sobre cómo mejoramos nuestra retención usando PostSale."
 → {"nivel_riesgo":"Bajo","probabilidad_churn_porcentaje":2,
-"razan_principal":"Advocacy público — el cliente construyó su reputación sobre el uso de la herramienta",
+"razon_principal":"Advocacy público — el cliente construyó su reputación sobre el uso de la herramienta",
 "accion_recomendada_para_el_gestor":"Amplificar el contenido desde los canales propios. Este cliente es prácticamente irretirable a corto plazo. Enfocar energía en asegurar la renovación con anticipación."}
 
 [SP-03] Cliente que paga anticipadamente o pide facturación anual.
@@ -517,33 +561,8 @@ RESPONDÉ SOLO CON EL JSON. Sin texto adicional."""
 
 
 # ---------------------------------------------------------------------------
-# INSTRUCCIONES DE INTEGRACIÓN
+# MOTOR DE IA
 # ---------------------------------------------------------------------------
-
-INSTRUCCIONES = """
-CÓMO INTEGRAR ESTE PROMPT EN API.PY
-=====================================
-
-1. Abrí api.py en VS Code
-
-2. Buscá la variable PROMPT_SISTEMA (empieza con:)
-   PROMPT_SISTEMA = \"\"\"Eres PostSale-AI...\"\"\"
-
-3. Reemplazá TODO ese bloque (desde PROMPT_SISTEMA = hasta
-   el cierre de las triple comillas) por el PROMPT_SISTEMA
-   de este archivo.
-
-4. Guardá con Ctrl+S — el servidor se reinicia solo.
-
-5. Probá con el endpoint /analizar para ver la diferencia.
-"""
-
-if __name__ == "__main__":
-    print(INSTRUCCIONES)
-    print(f"Longitud del prompt: {len(PROMPT_SISTEMA)} caracteres")
-    print(f"Escenarios incluidos: 50")
-    print(f"Categorías cubiertas: 8")
-
 
 def construir_prompt_usuario(
     nombre: str,
@@ -700,7 +719,7 @@ from fastapi.middleware.cors import CORSMiddleware
 app = FastAPI(
     title="PostSale API",
     description="Motor de predicción de churn B2B con IA",
-    version="0.3.0",
+    version="0.7.0",
 )
 
 app.add_middleware(
@@ -750,6 +769,7 @@ async def analizar_cliente(
     """
     Analiza el riesgo de churn de un cliente.
     Guarda el resultado en la base de datos para historial.
+    Si el riesgo es Alto o Crítico, crea una tarea automática.
     """
     cliente = session.get(ClienteDB, cliente_id)
     if not cliente:
@@ -771,7 +791,7 @@ async def analizar_cliente(
         interacciones=datos.interacciones,
         coleccion=coleccion_rag,
     )
-    
+
     # Guardar en base de datos
     analisis_db = AnalisisDB(
         cliente_id=cliente_id,
@@ -790,7 +810,23 @@ async def analizar_cliente(
     session.add(analisis_db)
     session.commit()
     session.refresh(analisis_db)
-    
+
+    # Crear tarea automática si el riesgo es Alto o Crítico
+    if resultado["nivel_riesgo"] in {"Alto", "Crítico"}:
+        tarea = TareaDB(
+            cliente_id=cliente_id,
+            analisis_id=analisis_db.id,
+            nivel_riesgo=resultado["nivel_riesgo"],
+            accion_sugerida=resultado["accion_recomendada_para_el_gestor"],
+            estado="pendiente",
+        )
+        session.add(tarea)
+        session.commit()
+        log.info(
+            f"Tarea creada para {cliente.nombre} "
+            f"({resultado['nivel_riesgo']}) — ID: {tarea.id}"
+        )
+
     # Enviar alerta si el riesgo es Alto o Crítico
     nivel = resultado["nivel_riesgo"]
     if nivel in {"Alto", "Crítico"}:
@@ -993,6 +1029,168 @@ def dashboard(session: Session = Depends(get_session)):
     )
 
 
+# --- GET /tareas/resumen — estadísticas de tareas ---
+# IMPORTANTE: este endpoint debe ir ANTES de /tareas/{tarea_id}
+# para que FastAPI no interprete "resumen" como un tarea_id entero.
+
+@app.get("/tareas/resumen", response_model=dict)
+def resumen_tareas(session: Session = Depends(get_session)):
+    """
+    Resumen de tareas para el dashboard del gestor.
+    Muestra cuántas tareas hay por estado y nivel de riesgo.
+    """
+    tareas = session.exec(select(TareaDB)).all()
+
+    pendientes = [t for t in tareas if t.estado == "pendiente"]
+    en_curso = [t for t in tareas if t.estado == "en_curso"]
+    completadas = [t for t in tareas if t.estado == "completada"]
+    descartadas = [t for t in tareas if t.estado == "descartada"]
+
+    criticas_pendientes = [
+        t for t in pendientes if t.nivel_riesgo == "Crítico"
+    ]
+
+    return {
+        "total": len(tareas),
+        "pendientes": len(pendientes),
+        "en_curso": len(en_curso),
+        "completadas": len(completadas),
+        "descartadas": len(descartadas),
+        "criticas_pendientes": len(criticas_pendientes),
+        "tasa_resolucion": round(
+            len(completadas) / len(tareas) * 100 if tareas else 0
+        ),
+    }
+
+
+# --- GET /tareas — listar tareas ---
+
+@app.get("/tareas", response_model=list[TareaResponse])
+def listar_tareas(
+    estado: Optional[str] = None,
+    session: Session = Depends(get_session),
+):
+    """
+    Lista todas las tareas del sistema.
+    Filtrable por estado: pendiente, en_curso, completada, descartada.
+    Ordenadas por urgencia (Crítico primero) y fecha de creación.
+    """
+    query = select(TareaDB)
+    if estado:
+        query = query.where(TareaDB.estado == estado)
+
+    tareas = session.exec(query).all()
+
+    orden_riesgo = {"Crítico": 0, "Alto": 1, "Medio": 2, "Bajo": 3}
+    tareas_ordenadas = sorted(
+        tareas,
+        key=lambda t: (orden_riesgo.get(t.nivel_riesgo, 4), t.fecha_creacion),
+    )
+
+    resultado = []
+    for tarea in tareas_ordenadas:
+        cliente = session.get(ClienteDB, tarea.cliente_id)
+        resultado.append(TareaResponse(
+            id=tarea.id,
+            cliente_id=tarea.cliente_id,
+            cliente_nombre=cliente.nombre if cliente else "—",
+            analisis_id=tarea.analisis_id,
+            nivel_riesgo=tarea.nivel_riesgo,
+            accion_sugerida=tarea.accion_sugerida,
+            accion_tomada=tarea.accion_tomada,
+            resultado_real=tarea.resultado_real,
+            estado=tarea.estado,
+            fecha_creacion=tarea.fecha_creacion,
+            fecha_cierre=tarea.fecha_cierre,
+            gestor=tarea.gestor,
+            notas=tarea.notas,
+        ))
+
+    return resultado
+
+
+# --- PATCH /tareas/{tarea_id} — actualizar tarea ---
+
+@app.patch("/tareas/{tarea_id}", response_model=TareaResponse)
+def actualizar_tarea(
+    tarea_id: int,
+    datos: TareaInput,
+    session: Session = Depends(get_session),
+):
+    """
+    Actualiza una tarea con lo que hizo el gestor y el resultado real.
+    Si el estado pasa a completada o descartada, registra la fecha de cierre.
+    """
+    tarea = session.get(TareaDB, tarea_id)
+    if not tarea:
+        raise HTTPException(
+            status_code=404,
+            detail=f"Tarea {tarea_id} no encontrada",
+        )
+
+    if datos.accion_tomada is not None:
+        tarea.accion_tomada = datos.accion_tomada
+    if datos.resultado_real is not None:
+        tarea.resultado_real = datos.resultado_real
+    if datos.estado is not None:
+        tarea.estado = datos.estado
+        if datos.estado in {"completada", "descartada"}:
+            tarea.fecha_cierre = datetime.now().isoformat()
+    if datos.gestor is not None:
+        tarea.gestor = datos.gestor
+    if datos.notas is not None:
+        tarea.notas = datos.notas
+
+    session.add(tarea)
+    session.commit()
+    session.refresh(tarea)
+
+    cliente = session.get(ClienteDB, tarea.cliente_id)
+    log.info(
+        f"Tarea {tarea_id} actualizada — "
+        f"Estado: {tarea.estado} — Cliente: {cliente.nombre if cliente else '?'}"
+    )
+
+    return TareaResponse(
+        id=tarea.id,
+        cliente_id=tarea.cliente_id,
+        cliente_nombre=cliente.nombre if cliente else "—",
+        analisis_id=tarea.analisis_id,
+        nivel_riesgo=tarea.nivel_riesgo,
+        accion_sugerida=tarea.accion_sugerida,
+        accion_tomada=tarea.accion_tomada,
+        resultado_real=tarea.resultado_real,
+        estado=tarea.estado,
+        fecha_creacion=tarea.fecha_creacion,
+        fecha_cierre=tarea.fecha_cierre,
+        gestor=tarea.gestor,
+        notas=tarea.notas,
+    )
+
+
+# --- DELETE /tareas/{tarea_id} — descartar tarea ---
+
+@app.delete("/tareas/{tarea_id}", response_model=dict)
+def descartar_tarea(
+    tarea_id: int,
+    session: Session = Depends(get_session),
+):
+    """Descarta una tarea sin eliminarla — queda en el historial."""
+    tarea = session.get(TareaDB, tarea_id)
+    if not tarea:
+        raise HTTPException(
+            status_code=404,
+            detail=f"Tarea {tarea_id} no encontrada",
+        )
+
+    tarea.estado = "descartada"
+    tarea.fecha_cierre = datetime.now().isoformat()
+    session.add(tarea)
+    session.commit()
+
+    return {"mensaje": f"Tarea {tarea_id} descartada", "id": tarea_id}
+
+
 # --- GET / — health check ---
 
 @app.get("/")
@@ -1001,6 +1199,6 @@ def health_check():
     return {
         "estado": "ok",
         "servicio": "PostSale API",
-        "version": "0.3.0",
+        "version": "0.7.0",
         "docs": "/docs",
     }
