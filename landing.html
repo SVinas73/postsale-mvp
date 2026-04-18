@@ -1,0 +1,1155 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PostSale — Predecí el churn antes de que ocurra</title>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --black: #0a0a08;
+  --white: #fafaf7;
+  --cream: #f5f3ee;
+  --gray: #8c8c84;
+  --gray2: #e8e6e0;
+  --red: #c8392b;
+  --red-light: #fdf1f0;
+  --orange: #d4541a;
+  --green: #1a7a4a;
+  --green-light: #f0f7f3;
+  --accent: #1a1a14;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: 'DM Sans', sans-serif;
+  background: var(--white);
+  color: var(--black);
+  font-size: 16px;
+  line-height: 1.6;
+  overflow-x: hidden;
+}
+
+/* ── NAV ── */
+nav {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 100;
+  padding: 0 48px;
+  height: 64px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: rgba(250,250,247,0.92);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--gray2);
+}
+
+.nav-logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  text-decoration: none;
+}
+
+.nav-logo-mark {
+  width: 30px;
+  height: 30px;
+  background: var(--black);
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.nav-logo-mark svg { width: 14px; height: 14px; }
+
+.nav-logo-name {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--black);
+  letter-spacing: -0.3px;
+}
+
+.nav-links {
+  display: flex;
+  align-items: center;
+  gap: 32px;
+}
+
+.nav-links a {
+  font-size: 14px;
+  color: var(--gray);
+  text-decoration: none;
+  font-weight: 400;
+  transition: color 0.15s;
+}
+
+.nav-links a:hover { color: var(--black); }
+
+.nav-cta {
+  background: var(--black) !important;
+  color: var(--white) !important;
+  padding: 8px 20px !important;
+  border-radius: 8px !important;
+  font-weight: 500 !important;
+  transition: opacity 0.15s !important;
+}
+
+.nav-cta:hover { opacity: 0.85 !important; }
+
+/* ── HERO ── */
+.hero {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 120px 24px 80px;
+  position: relative;
+  overflow: hidden;
+}
+
+.hero::before {
+  content: '';
+  position: absolute;
+  top: -200px; left: 50%;
+  transform: translateX(-50%);
+  width: 800px;
+  height: 800px;
+  background: radial-gradient(ellipse, rgba(200,57,43,0.06) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+.hero-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--cream);
+  border: 1px solid var(--gray2);
+  border-radius: 100px;
+  padding: 6px 16px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--gray);
+  margin-bottom: 32px;
+  animation: fadeUp 0.6s ease both;
+}
+
+.hero-badge span {
+  width: 6px;
+  height: 6px;
+  background: var(--green);
+  border-radius: 50%;
+  display: inline-block;
+}
+
+.hero-title {
+  font-family: 'Instrument Serif', serif;
+  font-size: clamp(48px, 7vw, 88px);
+  font-weight: 400;
+  line-height: 1.08;
+  letter-spacing: -2px;
+  color: var(--black);
+  max-width: 860px;
+  margin-bottom: 24px;
+  animation: fadeUp 0.6s ease 0.1s both;
+}
+
+.hero-title em {
+  font-style: italic;
+  color: var(--red);
+}
+
+.hero-sub {
+  font-size: 18px;
+  font-weight: 300;
+  color: var(--gray);
+  max-width: 520px;
+  line-height: 1.7;
+  margin-bottom: 48px;
+  animation: fadeUp 0.6s ease 0.2s both;
+}
+
+.hero-actions {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  justify-content: center;
+  animation: fadeUp 0.6s ease 0.3s both;
+}
+
+.btn-primary {
+  background: var(--black);
+  color: var(--white);
+  padding: 14px 32px;
+  border-radius: 10px;
+  font-size: 15px;
+  font-weight: 500;
+  text-decoration: none;
+  transition: all 0.2s;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  border: none;
+  cursor: pointer;
+  font-family: 'DM Sans', sans-serif;
+}
+
+.btn-primary:hover { background: #2a2a22; transform: translateY(-1px); }
+
+.btn-secondary {
+  background: transparent;
+  color: var(--black);
+  padding: 14px 28px;
+  border-radius: 10px;
+  font-size: 15px;
+  font-weight: 400;
+  text-decoration: none;
+  transition: all 0.2s;
+  border: 1px solid var(--gray2);
+  cursor: pointer;
+  font-family: 'DM Sans', sans-serif;
+}
+
+.btn-secondary:hover { background: var(--cream); }
+
+.hero-stats {
+  display: flex;
+  gap: 48px;
+  margin-top: 72px;
+  padding-top: 48px;
+  border-top: 1px solid var(--gray2);
+  animation: fadeUp 0.6s ease 0.4s both;
+}
+
+.stat-item { text-align: center; }
+
+.stat-num {
+  font-family: 'Instrument Serif', serif;
+  font-size: 36px;
+  font-weight: 400;
+  color: var(--black);
+  display: block;
+  letter-spacing: -1px;
+}
+
+.stat-label {
+  font-size: 13px;
+  color: var(--gray);
+  font-weight: 400;
+}
+
+/* ── DEMO CARD ── */
+.demo-section {
+  padding: 80px 24px;
+  background: var(--cream);
+  border-top: 1px solid var(--gray2);
+  border-bottom: 1px solid var(--gray2);
+}
+
+.demo-inner {
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.section-label {
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--gray);
+  margin-bottom: 16px;
+}
+
+.section-title {
+  font-family: 'Instrument Serif', serif;
+  font-size: clamp(32px, 5vw, 52px);
+  font-weight: 400;
+  line-height: 1.15;
+  letter-spacing: -1px;
+  margin-bottom: 48px;
+  color: var(--black);
+}
+
+.demo-cards {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+}
+
+.demo-card {
+  background: var(--white);
+  border: 1px solid var(--gray2);
+  border-radius: 14px;
+  padding: 24px;
+  position: relative;
+  overflow: hidden;
+}
+
+.demo-card-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 16px;
+}
+
+.demo-company {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--black);
+}
+
+.demo-plan {
+  font-size: 11px;
+  color: var(--gray);
+  margin-top: 2px;
+}
+
+.risk-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 10px;
+  border-radius: 100px;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.risk-bajo { background: var(--green-light); color: var(--green); }
+.risk-alto { background: #fff8f0; color: var(--orange); }
+.risk-critico { background: var(--red-light); color: var(--red); }
+
+.risk-dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: currentColor;
+}
+
+.demo-prob {
+  font-family: 'Instrument Serif', serif;
+  font-size: 42px;
+  font-weight: 400;
+  letter-spacing: -1px;
+  line-height: 1;
+  margin-bottom: 8px;
+}
+
+.demo-prob.bajo { color: var(--green); }
+.demo-prob.alto { color: var(--orange); }
+.demo-prob.critico { color: var(--red); }
+
+.demo-bar {
+  height: 4px;
+  background: var(--gray2);
+  border-radius: 2px;
+  margin-bottom: 16px;
+  overflow: hidden;
+}
+
+.demo-bar-fill {
+  height: 100%;
+  border-radius: 2px;
+  transition: width 1.5s ease;
+}
+
+.demo-razon {
+  font-size: 12px;
+  color: var(--gray);
+  line-height: 1.5;
+  margin-bottom: 12px;
+}
+
+.demo-accion {
+  font-size: 12px;
+  color: var(--black);
+  background: var(--cream);
+  border-radius: 8px;
+  padding: 10px 12px;
+  border-left: 2px solid currentColor;
+  line-height: 1.5;
+}
+
+.demo-accion.bajo { border-color: var(--green); }
+.demo-accion.alto { border-color: var(--orange); }
+.demo-accion.critico { border-color: var(--red); }
+
+.demo-meta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 14px;
+  font-size: 11px;
+  color: var(--gray);
+}
+
+.confidence-dots {
+  display: flex;
+  gap: 2px;
+}
+
+.conf-dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--gray2);
+}
+
+.conf-dot.filled { background: var(--black); }
+
+/* ── FEATURES ── */
+.features {
+  padding: 100px 24px;
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+.features-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 2px;
+  border: 1px solid var(--gray2);
+  border-radius: 16px;
+  overflow: hidden;
+  margin-top: 64px;
+}
+
+.feature-item {
+  padding: 40px 36px;
+  background: var(--white);
+  border-right: 1px solid var(--gray2);
+  border-bottom: 1px solid var(--gray2);
+  transition: background 0.2s;
+}
+
+.feature-item:hover { background: var(--cream); }
+.feature-item:nth-child(3n) { border-right: none; }
+.feature-item:nth-child(n+4) { border-bottom: none; }
+
+.feature-icon {
+  width: 40px;
+  height: 40px;
+  background: var(--cream);
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 20px;
+  font-size: 18px;
+}
+
+.feature-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--black);
+  margin-bottom: 10px;
+  letter-spacing: -0.2px;
+}
+
+.feature-desc {
+  font-size: 14px;
+  color: var(--gray);
+  line-height: 1.6;
+  font-weight: 300;
+}
+
+/* ── PROBLEMA/SOLUCIÓN ── */
+.problem {
+  padding: 100px 24px;
+  background: var(--black);
+  color: var(--white);
+}
+
+.problem-inner {
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+.problem-label {
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.4);
+  margin-bottom: 16px;
+}
+
+.problem-title {
+  font-family: 'Instrument Serif', serif;
+  font-size: clamp(32px, 5vw, 56px);
+  font-weight: 400;
+  line-height: 1.1;
+  letter-spacing: -1.5px;
+  margin-bottom: 64px;
+  color: var(--white);
+  max-width: 700px;
+}
+
+.problem-title em {
+  font-style: italic;
+  color: rgba(255,255,255,0.4);
+}
+
+.problem-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2px;
+}
+
+.problem-col {
+  padding: 40px;
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 12px;
+}
+
+.problem-col-label {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  margin-bottom: 24px;
+}
+
+.problem-col-label.before { color: rgba(255,255,255,0.3); }
+.problem-col-label.after { color: #4ade80; }
+
+.problem-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 12px 0;
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+  font-size: 14px;
+  font-weight: 300;
+}
+
+.problem-item:last-child { border-bottom: none; }
+
+.problem-item.before { color: rgba(255,255,255,0.5); }
+.problem-item.after { color: rgba(255,255,255,0.9); }
+
+.problem-item-icon {
+  font-size: 14px;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+/* ── PRICING ── */
+.pricing {
+  padding: 100px 24px;
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+.pricing-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  margin-top: 64px;
+}
+
+.pricing-card {
+  border: 1px solid var(--gray2);
+  border-radius: 16px;
+  padding: 36px 32px;
+  background: var(--white);
+  position: relative;
+  transition: border-color 0.2s, transform 0.2s;
+}
+
+.pricing-card:hover { border-color: var(--black); transform: translateY(-2px); }
+
+.pricing-card.featured {
+  border: 2px solid var(--black);
+  background: var(--black);
+  color: var(--white);
+}
+
+.pricing-featured-badge {
+  position: absolute;
+  top: -12px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--black);
+  color: var(--white);
+  font-size: 11px;
+  font-weight: 600;
+  padding: 4px 14px;
+  border-radius: 100px;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.pricing-card.featured .pricing-featured-badge {
+  background: var(--white);
+  color: var(--black);
+}
+
+.pricing-plan {
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--gray);
+  margin-bottom: 16px;
+}
+
+.pricing-card.featured .pricing-plan { color: rgba(255,255,255,0.5); }
+
+.pricing-price {
+  font-family: 'Instrument Serif', serif;
+  font-size: 52px;
+  font-weight: 400;
+  letter-spacing: -2px;
+  line-height: 1;
+  margin-bottom: 4px;
+  color: var(--black);
+}
+
+.pricing-card.featured .pricing-price { color: var(--white); }
+
+.pricing-period {
+  font-size: 13px;
+  color: var(--gray);
+  margin-bottom: 28px;
+}
+
+.pricing-card.featured .pricing-period { color: rgba(255,255,255,0.5); }
+
+.pricing-divider {
+  height: 1px;
+  background: var(--gray2);
+  margin-bottom: 24px;
+}
+
+.pricing-card.featured .pricing-divider { background: rgba(255,255,255,0.15); }
+
+.pricing-features {
+  list-style: none;
+  margin-bottom: 32px;
+}
+
+.pricing-features li {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  font-size: 14px;
+  color: var(--black);
+  padding: 6px 0;
+  font-weight: 300;
+}
+
+.pricing-card.featured .pricing-features li { color: rgba(255,255,255,0.85); }
+
+.pricing-check {
+  color: var(--green);
+  font-size: 14px;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.pricing-card.featured .pricing-check { color: #4ade80; }
+
+.pricing-btn {
+  display: block;
+  text-align: center;
+  padding: 13px;
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 500;
+  text-decoration: none;
+  transition: all 0.2s;
+  border: 1px solid var(--gray2);
+  color: var(--black);
+  background: transparent;
+  cursor: pointer;
+  font-family: 'DM Sans', sans-serif;
+  width: 100%;
+}
+
+.pricing-btn:hover { background: var(--cream); border-color: var(--black); }
+
+.pricing-card.featured .pricing-btn {
+  background: var(--white);
+  color: var(--black);
+  border-color: var(--white);
+}
+
+.pricing-card.featured .pricing-btn:hover { opacity: 0.9; }
+
+/* ── CTA FINAL ── */
+.final-cta {
+  padding: 120px 24px;
+  text-align: center;
+  background: var(--cream);
+  border-top: 1px solid var(--gray2);
+}
+
+.final-cta-title {
+  font-family: 'Instrument Serif', serif;
+  font-size: clamp(36px, 6vw, 72px);
+  font-weight: 400;
+  letter-spacing: -2px;
+  line-height: 1.1;
+  margin-bottom: 20px;
+  color: var(--black);
+  max-width: 700px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.final-cta-title em { font-style: italic; color: var(--red); }
+
+.final-cta-sub {
+  font-size: 16px;
+  color: var(--gray);
+  margin-bottom: 40px;
+  font-weight: 300;
+}
+
+/* ── FOOTER ── */
+footer {
+  padding: 32px 48px;
+  border-top: 1px solid var(--gray2);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: var(--white);
+}
+
+.footer-copy {
+  font-size: 13px;
+  color: var(--gray);
+}
+
+.footer-links {
+  display: flex;
+  gap: 24px;
+}
+
+.footer-links a {
+  font-size: 13px;
+  color: var(--gray);
+  text-decoration: none;
+  transition: color 0.15s;
+}
+
+.footer-links a:hover { color: var(--black); }
+
+/* ── ANIMATIONS ── */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.fade-up {
+  opacity: 0;
+  transform: translateY(24px);
+  transition: opacity 0.6s ease, transform 0.6s ease;
+}
+
+.fade-up.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* ── RESPONSIVE ── */
+@media (max-width: 768px) {
+  nav { padding: 0 20px; }
+  .nav-links { display: none; }
+  .hero-stats { flex-direction: column; gap: 24px; }
+  .demo-cards { grid-template-columns: 1fr; }
+  .features-grid { grid-template-columns: 1fr; }
+  .problem-grid { grid-template-columns: 1fr; }
+  .pricing-grid { grid-template-columns: 1fr; }
+  footer { flex-direction: column; gap: 16px; text-align: center; }
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <a href="#" class="nav-logo">
+    <div class="nav-logo-mark">
+      <svg viewBox="0 0 14 14" fill="none">
+        <path d="M7 1L13 4V10L7 13L1 10V4L7 1Z" fill="white"/>
+      </svg>
+    </div>
+    <span class="nav-logo-name">PostSale</span>
+  </a>
+  <div class="nav-links">
+    <a href="#como-funciona">Cómo funciona</a>
+    <a href="#features">Features</a>
+    <a href="#precios">Precios</a>
+    <a href="#precios" class="nav-cta">Empezar gratis</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-badge">
+    <span></span>
+    Motor de IA especializado en retención B2B
+  </div>
+
+  <h1 class="hero-title">
+    Sabé quién se va<br><em>antes</em> de que se vaya
+  </h1>
+
+  <p class="hero-sub">
+    PostSale analiza las interacciones de tus clientes B2B y predice el riesgo de cancelación con IA. Actuá antes de perder el contrato.
+  </p>
+
+  <div class="hero-actions">
+    <a href="#precios" class="btn-primary">
+      Empezar gratis
+      <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+        <path d="M1 7h12M8 2l5 5-5 5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </a>
+    <a href="#como-funciona" class="btn-secondary">Ver cómo funciona</a>
+  </div>
+
+  <div class="hero-stats">
+    <div class="stat-item">
+      <span class="stat-num">10/10</span>
+      <span class="stat-label">Confianza de la IA</span>
+    </div>
+    <div class="stat-item">
+      <span class="stat-num">&lt;2s</span>
+      <span class="stat-label">Por análisis</span>
+    </div>
+    <div class="stat-item">
+      <span class="stat-num">80+</span>
+      <span class="stat-label">Escenarios B2B entrenados</span>
+    </div>
+    <div class="stat-item">
+      <span class="stat-num">$0</span>
+      <span class="stat-label">Para empezar</span>
+    </div>
+  </div>
+</section>
+
+<!-- DEMO -->
+<section class="demo-section" id="como-funciona">
+  <div class="demo-inner">
+    <div class="section-label fade-up">En acción</div>
+    <h2 class="section-title fade-up">
+      Tres clientes.<br>Tres realidades distintas.
+    </h2>
+
+    <div class="demo-cards">
+
+      <!-- Card 1: Bajo -->
+      <div class="demo-card fade-up">
+        <div class="demo-card-top">
+          <div>
+            <div class="demo-company">InnovateTech S.A.</div>
+            <div class="demo-plan">Plan Professional</div>
+          </div>
+          <span class="risk-badge risk-bajo">
+            <span class="risk-dot"></span>Bajo
+          </span>
+        </div>
+        <div class="demo-prob bajo">5%</div>
+        <div class="demo-bar">
+          <div class="demo-bar-fill" style="width:5%;background:#1a7a4a"></div>
+        </div>
+        <div class="demo-razon">Engagement activo con el producto. Cliente feliz, pide nuevas funciones.</div>
+        <div class="demo-accion bajo">Invitarlo al programa beta del Q2 para fortalecer la relación.</div>
+        <div class="demo-meta">
+          <div class="confidence-dots">
+            <div class="conf-dot filled"></div><div class="conf-dot filled"></div>
+            <div class="conf-dot filled"></div><div class="conf-dot filled"></div>
+            <div class="conf-dot filled"></div><div class="conf-dot filled"></div>
+            <div class="conf-dot filled"></div><div class="conf-dot filled"></div>
+            <div class="conf-dot filled"></div><div class="conf-dot filled"></div>
+          </div>
+          10/10 · 1.2s
+        </div>
+      </div>
+
+      <!-- Card 2: Alto -->
+      <div class="demo-card fade-up" style="transition-delay:0.1s">
+        <div class="demo-card-top">
+          <div>
+            <div class="demo-company">Distribuidora Mercurio</div>
+            <div class="demo-plan">Plan Starter</div>
+          </div>
+          <span class="risk-badge risk-alto">
+            <span class="risk-dot"></span>Alto
+          </span>
+        </div>
+        <div class="demo-prob alto">75%</div>
+        <div class="demo-bar">
+          <div class="demo-bar-fill" style="width:75%;background:#d4541a"></div>
+        </div>
+        <div class="demo-razon">15 días sin login. Ticket sin resolver. Inactividad en módulo core.</div>
+        <div class="demo-accion alto">Llamar hoy. Ofrecer sesión 1:1 de onboarding. Resolver el ticket en 24h.</div>
+        <div class="demo-meta">
+          <div class="confidence-dots">
+            <div class="conf-dot filled"></div><div class="conf-dot filled"></div>
+            <div class="conf-dot filled"></div><div class="conf-dot filled"></div>
+            <div class="conf-dot filled"></div><div class="conf-dot filled"></div>
+            <div class="conf-dot filled"></div><div class="conf-dot filled"></div>
+            <div class="conf-dot filled"></div><div class="conf-dot filled"></div>
+          </div>
+          10/10 · 0.9s
+        </div>
+      </div>
+
+      <!-- Card 3: Crítico -->
+      <div class="demo-card fade-up" style="transition-delay:0.2s">
+        <div class="demo-card-top">
+          <div>
+            <div class="demo-company">GlobalOps Enterprise</div>
+            <div class="demo-plan">Plan Enterprise</div>
+          </div>
+          <span class="risk-badge risk-critico">
+            <span class="risk-dot"></span>Crítico
+          </span>
+        </div>
+        <div class="demo-prob critico">95%</div>
+        <div class="demo-bar">
+          <div class="demo-bar-fill" style="width:95%;background:#c8392b"></div>
+        </div>
+        <div class="demo-razon">Error técnico reiterado + amenaza de cancelación + contrato vence en 45 días.</div>
+        <div class="demo-accion critico">Escalar a gerencia hoy. Asignar ingeniero dedicado. Propuesta de extensión de contrato.</div>
+        <div class="demo-meta">
+          <div class="confidence-dots">
+            <div class="conf-dot filled"></div><div class="conf-dot filled"></div>
+            <div class="conf-dot filled"></div><div class="conf-dot filled"></div>
+            <div class="conf-dot filled"></div><div class="conf-dot filled"></div>
+            <div class="conf-dot filled"></div><div class="conf-dot filled"></div>
+            <div class="conf-dot filled"></div><div class="conf-dot filled"></div>
+          </div>
+          10/10 · 1.1s
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- PROBLEMA / SOLUCIÓN -->
+<section class="problem">
+  <div class="problem-inner">
+    <div class="problem-label">El problema</div>
+    <h2 class="problem-title">
+      Los CRMs te dicen lo que pasó.<br>
+      <em>PostSale te dice lo que va a pasar.</em>
+    </h2>
+
+    <div class="problem-grid">
+      <div class="problem-col">
+        <div class="problem-col-label before">Sin PostSale</div>
+        <div class="problem-item before">
+          <span class="problem-item-icon">✗</span>
+          Te enterás cuando el cliente ya firmó con la competencia
+        </div>
+        <div class="problem-item before">
+          <span class="problem-item-icon">✗</span>
+          El gerente dice "todo bien" mientras el técnico está frustrado
+        </div>
+        <div class="problem-item before">
+          <span class="problem-item-icon">✗</span>
+          15 días sin login y nadie lo nota
+        </div>
+        <div class="problem-item before">
+          <span class="problem-item-icon">✗</span>
+          El gestor actúa con intuición, no con datos
+        </div>
+        <div class="problem-item before">
+          <span class="problem-item-icon">✗</span>
+          Perdés $50.000 USD en contratos por falta de señales tempranas
+        </div>
+      </div>
+
+      <div class="problem-col">
+        <div class="problem-col-label after">Con PostSale</div>
+        <div class="problem-item after">
+          <span class="problem-item-icon">✓</span>
+          Detectás el riesgo 30-60 días antes de la cancelación
+        </div>
+        <div class="problem-item after">
+          <span class="problem-item-icon">✓</span>
+          Identificás la disonancia técnico-administrativa automáticamente
+        </div>
+        <div class="problem-item after">
+          <span class="problem-item-icon">✓</span>
+          Alertas en tiempo real cuando un cliente deja de usar el producto
+        </div>
+        <div class="problem-item after">
+          <span class="problem-item-icon">✓</span>
+          Acción específica y accionable para cada situación
+        </div>
+        <div class="problem-item after">
+          <span class="problem-item-icon">✓</span>
+          ROI inmediato: salvar un contrato paga el plan por 2 años
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FEATURES -->
+<section class="features" id="features">
+  <div class="section-label fade-up">Features</div>
+  <h2 class="section-title fade-up">Todo lo que necesitás para retener clientes B2B</h2>
+
+  <div class="features-grid">
+    <div class="feature-item fade-up">
+      <div class="feature-icon">🧠</div>
+      <div class="feature-title">IA especializada en B2B</div>
+      <div class="feature-desc">Entrenada con 80+ escenarios reales de churn B2B. No es análisis de sentimiento genérico — es fricción operativa específica.</div>
+    </div>
+    <div class="feature-item fade-up" style="transition-delay:0.05s">
+      <div class="feature-icon">⚡</div>
+      <div class="feature-title">Alertas en tiempo real</div>
+      <div class="feature-desc">Email automático cuando un cliente sube a Alto o Crítico. El gestor actúa en minutos, no días.</div>
+    </div>
+    <div class="feature-item fade-up" style="transition-delay:0.1s">
+      <div class="feature-icon">📊</div>
+      <div class="feature-title">Scoring histórico</div>
+      <div class="feature-desc">Gráfico de evolución del riesgo por cliente. Detectá tendencias antes de que se conviertan en cancelaciones.</div>
+    </div>
+    <div class="feature-item fade-up" style="transition-delay:0.15s">
+      <div class="feature-icon">✅</div>
+      <div class="feature-title">Sistema de tareas</div>
+      <div class="feature-desc">Cada alerta genera una tarea automática con la acción exacta a tomar. El gestor solo tiene que ejecutar.</div>
+    </div>
+    <div class="feature-item fade-up" style="transition-delay:0.2s">
+      <div class="feature-icon">💬</div>
+      <div class="feature-title">WhatsApp, email y tickets</div>
+      <div class="feature-desc">Analizá cualquier interacción — copiá el mensaje y PostSale hace el resto en menos de 2 segundos.</div>
+    </div>
+    <div class="feature-item fade-up" style="transition-delay:0.25s">
+      <div class="feature-icon">🌐</div>
+      <div class="feature-title">Dashboard bilingüe</div>
+      <div class="feature-desc">Interfaz en español e inglés. Tus gestores de cuenta ven todo lo que necesitan en un solo lugar.</div>
+    </div>
+  </div>
+</section>
+
+<!-- PRICING -->
+<section class="pricing" id="precios">
+  <div class="section-label fade-up">Precios</div>
+  <h2 class="section-title fade-up">
+    Salvar un contrato paga el plan<br>por dos años enteros.
+  </h2>
+
+  <div class="pricing-grid">
+
+    <!-- Starter -->
+    <div class="pricing-card fade-up">
+      <div class="pricing-plan">Starter</div>
+      <div class="pricing-price">$49</div>
+      <div class="pricing-period">USD / mes</div>
+      <div class="pricing-divider"></div>
+      <ul class="pricing-features">
+        <li><span class="pricing-check">✓</span>Hasta 25 clientes</li>
+        <li><span class="pricing-check">✓</span>Análisis ilimitados</li>
+        <li><span class="pricing-check">✓</span>Alertas por email</li>
+        <li><span class="pricing-check">✓</span>Dashboard web</li>
+        <li><span class="pricing-check">✓</span>Historial de riesgo</li>
+      </ul>
+      <button class="pricing-btn" onclick="document.getElementById('contacto').scrollIntoView({behavior:'smooth'})">
+        Empezar con Starter
+      </button>
+    </div>
+
+    <!-- Professional -->
+    <div class="pricing-card featured fade-up" style="transition-delay:0.1s">
+      <div class="pricing-featured-badge">Más popular</div>
+      <div class="pricing-plan">Professional</div>
+      <div class="pricing-price">$149</div>
+      <div class="pricing-period">USD / mes</div>
+      <div class="pricing-divider"></div>
+      <ul class="pricing-features">
+        <li><span class="pricing-check">✓</span>Hasta 100 clientes</li>
+        <li><span class="pricing-check">✓</span>Análisis ilimitados</li>
+        <li><span class="pricing-check">✓</span>Alertas en tiempo real</li>
+        <li><span class="pricing-check">✓</span>Sistema de tareas</li>
+        <li><span class="pricing-check">✓</span>Scoring histórico + gráficos</li>
+        <li><span class="pricing-check">✓</span>Soporte prioritario</li>
+      </ul>
+      <button class="pricing-btn" onclick="document.getElementById('contacto').scrollIntoView({behavior:'smooth'})">
+        Empezar con Professional
+      </button>
+    </div>
+
+    <!-- Enterprise -->
+    <div class="pricing-card fade-up" style="transition-delay:0.2s">
+      <div class="pricing-plan">Enterprise</div>
+      <div class="pricing-price">$399</div>
+      <div class="pricing-period">USD / mes</div>
+      <div class="pricing-divider"></div>
+      <ul class="pricing-features">
+        <li><span class="pricing-check">✓</span>Clientes ilimitados</li>
+        <li><span class="pricing-check">✓</span>RAG con casos de tu industria</li>
+        <li><span class="pricing-check">✓</span>Integración con CRM</li>
+        <li><span class="pricing-check">✓</span>Análisis automático diario</li>
+        <li><span class="pricing-check">✓</span>Onboarding personalizado</li>
+        <li><span class="pricing-check">✓</span>SLA garantizado</li>
+      </ul>
+      <button class="pricing-btn" onclick="document.getElementById('contacto').scrollIntoView({behavior:'smooth'})">
+        Hablar con ventas
+      </button>
+    </div>
+
+  </div>
+</section>
+
+<!-- CTA FINAL -->
+<section class="final-cta" id="contacto">
+  <h2 class="final-cta-title fade-up">
+    Tu próximo cliente que cancela<br>
+    <em>ya te está mandando señales.</em>
+  </h2>
+  <p class="final-cta-sub fade-up">Empezá gratis. Sin tarjeta. Sin configuración compleja.</p>
+  <div class="fade-up" style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap">
+    <a href="mailto:santivinas1@gmail.com?subject=Quiero probar PostSale&body=Hola, me interesa probar PostSale para mi empresa." class="btn-primary">
+      Contactar ahora
+      <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+        <path d="M1 7h12M8 2l5 5-5 5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </a>
+    <a href="https://postsale-mvp.onrender.com/docs" target="_blank" class="btn-secondary">Ver la API</a>
+  </div>
+  <p style="font-size:13px;color:var(--gray);margin-top:24px">
+    ¿Tenés preguntas? Escribinos a <a href="mailto:santivinas1@gmail.com" style="color:var(--black)">santivinas1@gmail.com</a>
+  </p>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-copy">© 2026 PostSale. Todos los derechos reservados.</div>
+  <div class="footer-links">
+    <a href="#como-funciona">Cómo funciona</a>
+    <a href="#features">Features</a>
+    <a href="#precios">Precios</a>
+    <a href="mailto:santivinas1@gmail.com">Contacto</a>
+  </div>
+</footer>
+
+<script>
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      entry.target.classList.add('visible');
+    }
+  });
+}, { threshold: 0.1 });
+
+document.querySelectorAll('.fade-up').forEach(el => observer.observe(el));
+</script>
+
+</body>
+</html>

@@ -1,15 +1,11 @@
 {
   "version": 2,
   "builds": [
-    {
-      "src": "dashboard.html",
-      "use": "@vercel/static"
-    }
+    {"src": "landing.html", "use": "@vercel/static"},
+    {"src": "dashboard.html", "use": "@vercel/static"}
   ],
   "routes": [
-    {
-      "src": "/(.*)",
-      "dest": "dashboard.html"
-    }
+    {"src": "/dashboard", "dest": "/dashboard.html"},
+    {"src": "/(.*)", "dest": "/landing.html"}
   ]
 }
