@@ -42,7 +42,12 @@ from sqlmodel import Field as SQLField
 from sqlmodel import Session, SQLModel, create_engine, select
 from rag_postsale import analizar_con_rag, inicializar_base_vectorial
 
-coleccion_rag = inicializar_base_vectorial()
+try:
+    coleccion_rag = inicializar_base_vectorial()
+    RAG_DISPONIBLE = True
+except Exception:
+    coleccion_rag = None
+    RAG_DISPONIBLE = False
 
 # ---------------------------------------------------------------------------
 # LOGGING
@@ -785,12 +790,19 @@ async def analizar_cliente(
         )
 
     # Llamar al motor de IA con RAG
-    resultado = await analizar_con_rag(
-        nombre=cliente.nombre,
-        plan=cliente.plan_actual.value,
-        interacciones=datos.interacciones,
-        coleccion=coleccion_rag,
-    )
+    if RAG_DISPONIBLE and coleccion_rag:
+        resultado = await analizar_con_rag(
+            nombre=cliente.nombre,
+            plan=cliente.plan_actual.value,
+            interacciones=datos.interacciones,
+            coleccion=coleccion_rag,
+        )
+    else:
+        resultado = await analizar_con_ia(
+            nombre=cliente.nombre,
+            plan=cliente.plan_actual.value,
+            interacciones=datos.interacciones,
+        )
 
     # Guardar en base de datos
     analisis_db = AnalisisDB(

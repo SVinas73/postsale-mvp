@@ -5,5 +5,3 @@ groq
 pydantic
 resend
 apscheduler
-chromadb
-sentence-transformers
