@@ -40,9 +40,9 @@ from groq import AsyncGroq
 from pydantic import BaseModel, Field, ValidationError
 from sqlmodel import Field as SQLField
 from sqlmodel import Session, SQLModel, create_engine, select
-from rag_postsale import analizar_con_rag, inicializar_base_vectorial
 
 try:
+    from rag_postsale import analizar_con_rag, inicializar_base_vectorial
     coleccion_rag = inicializar_base_vectorial()
     RAG_DISPONIBLE = True
 except Exception:
