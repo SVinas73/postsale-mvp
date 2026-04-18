@@ -41,6 +41,11 @@ from pydantic import BaseModel, Field, ValidationError
 from sqlmodel import Field as SQLField
 from sqlmodel import Session, SQLModel, create_engine, select
 
+from gmail_integration import (
+    get_google_flow, get_gmail_service, gmail_esta_autorizado,
+    obtener_emails_clientes, analizar_emails_cliente,
+)
+
 try:
     from rag_postsale import analizar_con_rag, inicializar_base_vectorial
     coleccion_rag = inicializar_base_vectorial()
@@ -1202,6 +1207,184 @@ def descartar_tarea(
 
     return {"mensaje": f"Tarea {tarea_id} descartada", "id": tarea_id}
 
+
+# --- GET /gmail/autorizar — iniciar flujo OAuth2 ---
+
+@app.get("/gmail/autorizar")
+def gmail_autorizar():
+    from fastapi.responses import RedirectResponse
+    try:
+        flow = get_google_flow()
+        auth_url, _ = flow.authorization_url(
+            access_type="offline",
+            include_granted_scopes="true",
+            prompt="consent",
+        )
+        return RedirectResponse(url=auth_url)
+    except ValueError as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+# --- GET /gmail/callback ---
+
+@app.get("/gmail/callback")
+def gmail_callback(code: str):
+    try:
+        flow = get_google_flow()
+        flow.fetch_token(code=code)
+        creds = flow.credentials
+        with open("gmail_token.json", "w") as f:
+            f.write(creds.to_json())
+        log.info("Gmail autorizado exitosamente")
+        return {
+            "estado": "ok",
+            "mensaje": "Gmail conectado exitosamente. Ya podés usar /gmail/analizar",
+            "siguiente_paso": "/gmail/analizar",
+        }
+    except Exception as e:
+        log.error(f"Error en callback de Gmail: {e}")
+        raise HTTPException(status_code=400, detail=f"Error autorizando Gmail: {e}")
+
+
+# --- GET /gmail/estado ---
+
+@app.get("/gmail/estado")
+def gmail_estado():
+    autorizado = gmail_esta_autorizado()
+    return {
+        "autorizado": autorizado,
+        "mensaje": "Gmail conectado" if autorizado else "Gmail no conectado — ir a /gmail/autorizar",
+        "endpoint_autorizar": "/gmail/autorizar" if not autorizado else None,
+    }
+
+
+# --- POST /gmail/analizar ---
+
+@app.post("/gmail/analizar")
+async def gmail_analizar(
+    dias: int = 30,
+    session: Session = Depends(get_session),
+):
+    if not gmail_esta_autorizado():
+        raise HTTPException(
+            status_code=401,
+            detail="Gmail no está autorizado. Ir a /gmail/autorizar primero.",
+        )
+    try:
+        service = get_gmail_service()
+        emails_por_remitente = obtener_emails_clientes(service, dias_hacia_atras=dias)
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error leyendo Gmail: {e}")
+
+    resultados = []
+    procesados = 0
+    omitidos = 0
+
+    for email_addr, emails in emails_por_remitente.items():
+        clientes_existentes = session.exec(
+            select(ClienteDB).where(ClienteDB.nombre == email_addr)
+        ).all()
+
+        if clientes_existentes:
+            cliente = clientes_existentes[0]
+        else:
+            nombre_display = emails[0].get("nombre_remitente", email_addr) if emails else email_addr
+            cliente = ClienteDB(
+                nombre=nombre_display or email_addr,
+                plan_actual=PlanTipo.PROFESSIONAL,
+            )
+            session.add(cliente)
+            session.commit()
+            session.refresh(cliente)
+            log.info(f"Cliente creado automáticamente desde Gmail: {cliente.nombre}")
+
+        analizar_fn = analizar_con_rag if RAG_DISPONIBLE and coleccion_rag else analizar_con_ia
+        coleccion = coleccion_rag if RAG_DISPONIBLE else None
+
+        resultado = await analizar_emails_cliente(
+            nombre_empresa=cliente.nombre,
+            emails=emails,
+            analizar_fn=analizar_fn,
+            coleccion=coleccion,
+        )
+
+        if resultado is None:
+            omitidos += 1
+            continue
+
+        analisis_db = AnalisisDB(
+            cliente_id=cliente.id,
+            nivel_riesgo=resultado["nivel_riesgo"],
+            probabilidad_churn_porcentaje=resultado["probabilidad_churn_porcentaje"],
+            razon_principal=resultado["razon_principal"],
+            accion_recomendada=resultado["accion_recomendada_para_el_gestor"],
+            score_confianza=resultado["score_confianza"],
+            intentos_realizados=resultado["intentos_realizados"],
+            tiempo_procesamiento_segundos=resultado["tiempo_procesamiento_segundos"],
+            requiere_revision_manual=resultado["requiere_revision_manual"],
+            interacciones_json=json.dumps(
+                [{"tipo": "gmail", "emails": len(emails)}], ensure_ascii=False
+            ),
+        )
+        session.add(analisis_db)
+        session.commit()
+        session.refresh(analisis_db)
+
+        if resultado["nivel_riesgo"] in {"Alto", "Crítico"}:
+            tarea = TareaDB(
+                cliente_id=cliente.id,
+                analisis_id=analisis_db.id,
+                nivel_riesgo=resultado["nivel_riesgo"],
+                accion_sugerida=resultado["accion_recomendada_para_el_gestor"],
+                estado="pendiente",
+            )
+            session.add(tarea)
+            session.commit()
+
+            resend_key = os.getenv("RESEND_API_KEY")
+            if resend_key:
+                import resend as resend_lib
+                resend_lib.api_key = resend_key
+                emoji = "🔴" if resultado["nivel_riesgo"] == "Crítico" else "🟠"
+                try:
+                    resend_lib.Emails.send({
+                        "from": "PostSale <onboarding@resend.dev>",
+                        "to": ["santivinas1@gmail.com"],
+                        "subject": f"{emoji} PostSale Gmail — {resultado['nivel_riesgo']}: {cliente.nombre}",
+                        "html": f"""
+                        <div style='font-family:Arial,sans-serif;max-width:560px;margin:0 auto'>
+                          <h2>{emoji} Alerta {resultado['nivel_riesgo']} detectada en Gmail</h2>
+                          <p><strong>Cliente:</strong> {cliente.nombre}</p>
+                          <p><strong>Emails analizados:</strong> {len(emails)}</p>
+                          <p><strong>Probabilidad de cancelación:</strong> {resultado['probabilidad_churn_porcentaje']}%</p>
+                          <p><strong>Causa:</strong> {resultado['razon_principal']}</p>
+                          <div style='background:#fef2f2;border-left:3px solid #dc2626;padding:14px;border-radius:4px;margin-top:16px'>
+                            <strong>Acción recomendada:</strong><br><br>
+                            {resultado['accion_recomendada_para_el_gestor']}
+                          </div>
+                        </div>""",
+                    })
+                except Exception as e:
+                    log.warning(f"Error enviando alerta Gmail: {e}")
+
+        procesados += 1
+        resultados.append({
+            "cliente": cliente.nombre,
+            "email": email_addr,
+            "emails_analizados": len(emails),
+            "nivel_riesgo": resultado["nivel_riesgo"],
+            "probabilidad_churn_porcentaje": resultado["probabilidad_churn_porcentaje"],
+            "score_confianza": resultado["score_confianza"],
+        })
+
+    log.info(f"Gmail análisis completado: {procesados} clientes, {omitidos} omitidos")
+    return {
+        "estado": "ok",
+        "procesados": procesados,
+        "omitidos": omitidos,
+        "dias_analizados": dias,
+        "resultados": sorted(resultados, key=lambda r: r["probabilidad_churn_porcentaje"], reverse=True),
+    }
 
 # --- GET / — health check ---
 
