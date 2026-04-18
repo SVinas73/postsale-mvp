@@ -35,6 +35,28 @@
     --radius-sm: 6px;
     --shadow: 0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
     --shadow-md: 0 4px 6px rgba(0,0,0,0.05), 0 2px 4px rgba(0,0,0,0.04);
+    --color-text-primary: #1a1a18;
+    --color-text-secondary: #6b6b67;
+    --color-text-success: #16a34a;
+    --color-text-warning: #ca8a04;
+    --color-text-danger: #dc2626;
+    --color-text-info: #2563eb;
+    --color-background-primary: #ffffff;
+    --color-background-secondary: #f7f7f5;
+    --color-background-success: #f0fdf4;
+    --color-background-warning: #fefce8;
+    --color-background-danger: #fef2f2;
+    --color-background-info: #eff6ff;
+    --color-border-tertiary: #e5e5e2;
+    --color-border-secondary: #d4d4d0;
+    --color-border-success: #bbf7d0;
+    --color-border-warning: #fde68a;
+    --color-border-danger: #fecaca;
+    --color-border-info: #bfdbfe;
+    --font-sans: 'Inter', sans-serif;
+    --font-mono: 'JetBrains Mono', monospace;
+    --border-radius-md: 8px;
+    --border-radius-lg: 12px;
   }
 
   * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -48,7 +70,6 @@
     min-height: 100vh;
   }
 
-  /* SIDEBAR */
   .sidebar {
     position: fixed;
     left: 0; top: 0; bottom: 0;
@@ -61,47 +82,14 @@
     z-index: 100;
   }
 
-  .sidebar-logo {
-    padding: 20px 20px 16px;
-    border-bottom: 1px solid var(--border);
-  }
-
-  .logo-mark {
-    display: flex;
-    align-items: center;
-    gap: 9px;
-  }
-
-  .logo-icon {
-    width: 28px;
-    height: 28px;
-    background: var(--text);
-    border-radius: 7px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-
+  .sidebar-logo { padding: 20px 20px 16px; border-bottom: 1px solid var(--border); }
+  .logo-mark { display: flex; align-items: center; gap: 9px; }
+  .logo-icon { width: 28px; height: 28px; background: var(--text); border-radius: 7px; display: flex; align-items: center; justify-content: center; }
   .logo-icon svg { width: 14px; height: 14px; }
+  .logo-name { font-size: 15px; font-weight: 700; color: var(--text); letter-spacing: -0.3px; }
+  .logo-tagline { font-size: 10px; color: var(--text3); margin-top: 1px; letter-spacing: 0.02em; }
 
-  .logo-name {
-    font-size: 15px;
-    font-weight: 700;
-    color: var(--text);
-    letter-spacing: -0.3px;
-  }
-
-  .logo-tagline {
-    font-size: 10px;
-    color: var(--text3);
-    margin-top: 1px;
-    letter-spacing: 0.02em;
-  }
-
-  .sidebar-nav {
-    padding: 12px 10px;
-    flex: 1;
-  }
+  .sidebar-nav { padding: 12px 10px; flex: 1; }
 
   .nav-item {
     display: flex;
@@ -116,513 +104,139 @@
     transition: all 0.15s;
     margin-bottom: 2px;
   }
-
   .nav-item:hover { background: var(--bg2); color: var(--text); }
   .nav-item.active { background: var(--bg2); color: var(--text); }
   .nav-item svg { width: 15px; height: 15px; flex-shrink: 0; }
 
   .nav-section {
-    font-size: 10px;
-    font-weight: 600;
-    color: var(--text3);
-    letter-spacing: 0.06em;
-    text-transform: uppercase;
+    font-size: 10px; font-weight: 600; color: var(--text3);
+    letter-spacing: 0.06em; text-transform: uppercase;
     padding: 12px 10px 4px;
   }
 
-  .sidebar-footer {
-    padding: 12px 10px;
-    border-top: 1px solid var(--border);
-  }
+  .sidebar-footer { padding: 12px 10px; border-top: 1px solid var(--border); }
+  .lang-toggle { display: flex; background: var(--bg2); border-radius: var(--radius-sm); padding: 3px; gap: 2px; }
+  .lang-btn { flex: 1; padding: 5px; border: none; background: transparent; border-radius: 4px; font-size: 11px; font-weight: 600; color: var(--text3); cursor: pointer; transition: all 0.15s; }
+  .lang-btn.active { background: var(--bg); color: var(--text); box-shadow: var(--shadow); }
 
-  .lang-toggle {
-    display: flex;
-    background: var(--bg2);
-    border-radius: var(--radius-sm);
-    padding: 3px;
-    gap: 2px;
-  }
-
-  .lang-btn {
-    flex: 1;
-    padding: 5px;
-    border: none;
-    background: transparent;
-    border-radius: 4px;
-    font-size: 11px;
-    font-weight: 600;
-    color: var(--text3);
-    cursor: pointer;
-    transition: all 0.15s;
-  }
-
-  .lang-btn.active {
-    background: var(--bg);
-    color: var(--text);
-    box-shadow: var(--shadow);
-  }
-
-  /* MAIN */
-  .main {
-    margin-left: 220px;
-    min-height: 100vh;
-  }
+  .main { margin-left: 220px; min-height: 100vh; }
 
   .topbar {
-    background: var(--bg);
-    border-bottom: 1px solid var(--border);
-    padding: 0 28px;
-    height: 56px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    position: sticky;
-    top: 0;
-    z-index: 50;
+    background: var(--bg); border-bottom: 1px solid var(--border);
+    padding: 0 28px; height: 56px;
+    display: flex; align-items: center; justify-content: space-between;
+    position: sticky; top: 0; z-index: 50;
   }
-
-  .topbar-title {
-    font-size: 15px;
-    font-weight: 600;
-    color: var(--text);
-    letter-spacing: -0.2px;
-  }
-
-  .topbar-right {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-  }
+  .topbar-title { font-size: 15px; font-weight: 600; color: var(--text); letter-spacing: -0.2px; }
+  .topbar-right { display: flex; align-items: center; gap: 10px; }
 
   .btn {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    padding: 7px 14px;
-    border-radius: var(--radius-sm);
-    font-size: 13px;
-    font-weight: 500;
-    cursor: pointer;
-    transition: all 0.15s;
-    border: 1px solid var(--border);
-    background: var(--bg);
-    color: var(--text);
-    font-family: 'Inter', sans-serif;
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 7px 14px; border-radius: var(--radius-sm);
+    font-size: 13px; font-weight: 500; cursor: pointer;
+    transition: all 0.15s; border: 1px solid var(--border);
+    background: var(--bg); color: var(--text); font-family: 'Inter', sans-serif;
   }
-
   .btn:hover { background: var(--bg2); }
   .btn svg { width: 14px; height: 14px; }
-
-  .btn-primary {
-    background: var(--text);
-    color: var(--bg);
-    border-color: var(--text);
-  }
-
+  .btn-primary { background: var(--text); color: var(--bg); border-color: var(--text); }
   .btn-primary:hover { background: #333; }
 
   .refresh-btn {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    padding: 7px 14px;
-    border-radius: var(--radius-sm);
-    font-size: 13px;
-    font-weight: 500;
-    cursor: pointer;
-    border: 1px solid var(--border);
-    background: var(--bg);
-    color: var(--text2);
-    font-family: 'Inter', sans-serif;
-    transition: all 0.15s;
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 7px 14px; border-radius: var(--radius-sm);
+    font-size: 13px; font-weight: 500; cursor: pointer;
+    border: 1px solid var(--border); background: var(--bg);
+    color: var(--text2); font-family: 'Inter', sans-serif; transition: all 0.15s;
   }
   .refresh-btn:hover { background: var(--bg2); color: var(--text); }
   .refresh-btn svg { width: 14px; height: 14px; }
 
   .content { padding: 28px; }
 
-  /* METRIC CARDS */
-  .metrics-grid {
-    display: grid;
-    grid-template-columns: repeat(5, 1fr);
-    gap: 12px;
-    margin-bottom: 24px;
-  }
-
-  .metric-card {
-    background: var(--bg);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    padding: 16px;
-    box-shadow: var(--shadow);
-  }
-
-  .metric-label {
-    font-size: 11px;
-    font-weight: 600;
-    color: var(--text3);
-    letter-spacing: 0.04em;
-    text-transform: uppercase;
-    margin-bottom: 8px;
-  }
-
-  .metric-value {
-    font-size: 28px;
-    font-weight: 700;
-    color: var(--text);
-    letter-spacing: -0.5px;
-    line-height: 1;
-  }
-
+  .metrics-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; margin-bottom: 24px; }
+  .metric-card { background: var(--bg); border: 1px solid var(--border); border-radius: var(--radius); padding: 16px; box-shadow: var(--shadow); }
+  .metric-label { font-size: 11px; font-weight: 600; color: var(--text3); letter-spacing: 0.04em; text-transform: uppercase; margin-bottom: 8px; }
+  .metric-value { font-size: 28px; font-weight: 700; color: var(--text); letter-spacing: -0.5px; line-height: 1; }
   .metric-card.critico .metric-value { color: var(--red); }
   .metric-card.alto .metric-value { color: var(--orange); }
   .metric-card.medio .metric-value { color: var(--yellow); }
   .metric-card.bajo .metric-value { color: var(--green); }
+  .metric-sub { font-size: 11px; color: var(--text3); margin-top: 4px; }
 
-  .metric-sub {
-    font-size: 11px;
-    color: var(--text3);
-    margin-top: 4px;
-  }
+  .section { background: var(--bg); border: 1px solid var(--border); border-radius: var(--radius); box-shadow: var(--shadow); margin-bottom: 20px; overflow: hidden; }
+  .section-header { padding: 16px 20px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; }
+  .section-title { font-size: 13px; font-weight: 600; color: var(--text); }
+  .section-count { font-size: 12px; color: var(--text3); background: var(--bg2); padding: 2px 8px; border-radius: 20px; }
 
-  /* SECTION */
-  .section {
-    background: var(--bg);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    box-shadow: var(--shadow);
-    margin-bottom: 20px;
-    overflow: hidden;
-  }
-
-  .section-header {
-    padding: 16px 20px;
-    border-bottom: 1px solid var(--border);
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-  }
-
-  .section-title {
-    font-size: 13px;
-    font-weight: 600;
-    color: var(--text);
-  }
-
-  .section-count {
-    font-size: 12px;
-    color: var(--text3);
-    background: var(--bg2);
-    padding: 2px 8px;
-    border-radius: 20px;
-  }
-
-  /* TABLE */
-  table {
-    width: 100%;
-    border-collapse: collapse;
-  }
-
-  thead th {
-    font-size: 11px;
-    font-weight: 600;
-    color: var(--text3);
-    letter-spacing: 0.04em;
-    text-transform: uppercase;
-    padding: 10px 20px;
-    text-align: left;
-    background: var(--bg2);
-    border-bottom: 1px solid var(--border);
-  }
-
-  tbody tr {
-    border-bottom: 1px solid var(--border);
-    transition: background 0.1s;
-    cursor: pointer;
-  }
-
+  table { width: 100%; border-collapse: collapse; }
+  thead th { font-size: 11px; font-weight: 600; color: var(--text3); letter-spacing: 0.04em; text-transform: uppercase; padding: 10px 20px; text-align: left; background: var(--bg2); border-bottom: 1px solid var(--border); }
+  tbody tr { border-bottom: 1px solid var(--border); transition: background 0.1s; cursor: pointer; }
   tbody tr:last-child { border-bottom: none; }
   tbody tr:hover { background: var(--bg2); }
+  tbody td { padding: 13px 20px; font-size: 13px; color: var(--text); vertical-align: middle; }
 
-  tbody td {
-    padding: 13px 20px;
-    font-size: 13px;
-    color: var(--text);
-    vertical-align: middle;
-  }
+  .client-name { font-weight: 600; color: var(--text); margin-bottom: 1px; }
+  .client-plan { font-size: 11px; color: var(--text3); }
 
-  .client-name {
-    font-weight: 600;
-    color: var(--text);
-    margin-bottom: 1px;
-  }
-
-  .client-plan {
-    font-size: 11px;
-    color: var(--text3);
-  }
-
-  /* BADGES */
-  .badge {
-    display: inline-flex;
-    align-items: center;
-    gap: 5px;
-    padding: 3px 9px;
-    border-radius: 20px;
-    font-size: 11px;
-    font-weight: 600;
-    white-space: nowrap;
-  }
-
-  .badge-dot {
-    width: 6px;
-    height: 6px;
-    border-radius: 50%;
-    flex-shrink: 0;
-  }
-
-  .badge.critico {
-    background: var(--red-bg);
-    color: var(--red);
-    border: 1px solid var(--red-border);
-  }
+  .badge { display: inline-flex; align-items: center; gap: 5px; padding: 3px 9px; border-radius: 20px; font-size: 11px; font-weight: 600; white-space: nowrap; }
+  .badge-dot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; }
+  .badge.critico { background: var(--red-bg); color: var(--red); border: 1px solid var(--red-border); }
   .badge.critico .badge-dot { background: var(--red); }
-
-  .badge.alto {
-    background: var(--orange-bg);
-    color: var(--orange);
-    border: 1px solid var(--orange-border);
-  }
+  .badge.alto { background: var(--orange-bg); color: var(--orange); border: 1px solid var(--orange-border); }
   .badge.alto .badge-dot { background: var(--orange); }
-
-  .badge.medio {
-    background: var(--yellow-bg);
-    color: var(--yellow);
-    border: 1px solid var(--yellow-border);
-  }
+  .badge.medio { background: var(--yellow-bg); color: var(--yellow); border: 1px solid var(--yellow-border); }
   .badge.medio .badge-dot { background: var(--yellow); }
-
-  .badge.bajo {
-    background: var(--green-bg);
-    color: var(--green);
-    border: 1px solid var(--green-border);
-  }
+  .badge.bajo { background: var(--green-bg); color: var(--green); border: 1px solid var(--green-border); }
   .badge.bajo .badge-dot { background: var(--green); }
+  .badge.sin { background: var(--bg2); color: var(--text3); border: 1px solid var(--border); }
 
-  .badge.sin {
-    background: var(--bg2);
-    color: var(--text3);
-    border: 1px solid var(--border);
-  }
-
-  /* PROB BAR */
   .prob-wrap { display: flex; align-items: center; gap: 10px; }
-  .prob-bar {
-    width: 80px;
-    height: 5px;
-    background: var(--bg3);
-    border-radius: 3px;
-    overflow: hidden;
-    flex-shrink: 0;
-  }
+  .prob-bar { width: 80px; height: 5px; background: var(--bg3); border-radius: 3px; overflow: hidden; flex-shrink: 0; }
   .prob-fill { height: 100%; border-radius: 3px; transition: width 0.6s ease; }
   .prob-num { font-size: 12px; font-weight: 600; color: var(--text2); min-width: 30px; }
 
-  /* TENDENCIA */
-  .trend {
-    display: inline-flex;
-    align-items: center;
-    gap: 4px;
-    font-size: 11px;
-    font-weight: 500;
-  }
+  .trend { display: inline-flex; align-items: center; gap: 4px; font-size: 11px; font-weight: 500; }
   .trend.up { color: var(--red); }
   .trend.down { color: var(--green); }
   .trend.flat { color: var(--text3); }
 
-  /* ACTION */
-  .action-text {
-    font-size: 12px;
-    color: var(--text2);
-    max-width: 260px;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
+  .action-text { font-size: 12px; color: var(--text2); max-width: 260px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
-  /* MODAL */
-  .modal-overlay {
-    display: none;
-    position: fixed;
-    inset: 0;
-    background: rgba(0,0,0,0.3);
-    z-index: 200;
-    align-items: center;
-    justify-content: center;
-    backdrop-filter: blur(2px);
-  }
+  .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.3); z-index: 200; align-items: center; justify-content: center; backdrop-filter: blur(2px); }
   .modal-overlay.open { display: flex; }
-
-  .modal {
-    background: var(--bg);
-    border: 1px solid var(--border);
-    border-radius: 14px;
-    width: 560px;
-    max-height: 85vh;
-    overflow-y: auto;
-    box-shadow: 0 20px 60px rgba(0,0,0,0.15);
-    animation: modalIn 0.2s ease;
-  }
-
-  @keyframes modalIn {
-    from { opacity: 0; transform: translateY(8px) scale(0.98); }
-    to { opacity: 1; transform: translateY(0) scale(1); }
-  }
-
-  .modal-header {
-    padding: 20px 24px 16px;
-    border-bottom: 1px solid var(--border);
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-  }
-
-  .modal-close {
-    width: 28px;
-    height: 28px;
-    border-radius: 6px;
-    border: 1px solid var(--border);
-    background: var(--bg);
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: var(--text2);
-    font-size: 16px;
-    flex-shrink: 0;
-    transition: all 0.15s;
-  }
+  .modal { background: var(--bg); border: 1px solid var(--border); border-radius: 14px; width: 560px; max-height: 85vh; overflow-y: auto; box-shadow: 0 20px 60px rgba(0,0,0,0.15); animation: modalIn 0.2s ease; }
+  @keyframes modalIn { from { opacity: 0; transform: translateY(8px) scale(0.98); } to { opacity: 1; transform: translateY(0) scale(1); } }
+  .modal-header { padding: 20px 24px 16px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: flex-start; }
+  .modal-close { width: 28px; height: 28px; border-radius: 6px; border: 1px solid var(--border); background: var(--bg); cursor: pointer; display: flex; align-items: center; justify-content: center; color: var(--text2); font-size: 16px; flex-shrink: 0; transition: all 0.15s; }
   .modal-close:hover { background: var(--bg2); }
-
   .modal-body { padding: 20px 24px; }
-
   .modal-section { margin-bottom: 20px; }
-  .modal-section-title {
-    font-size: 10px;
-    font-weight: 600;
-    color: var(--text3);
-    letter-spacing: 0.06em;
-    text-transform: uppercase;
-    margin-bottom: 10px;
-  }
-
-  .detail-row {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-    padding: 8px 0;
-    border-bottom: 1px solid var(--border);
-    gap: 16px;
-  }
+  .modal-section-title { font-size: 10px; font-weight: 600; color: var(--text3); letter-spacing: 0.06em; text-transform: uppercase; margin-bottom: 10px; }
+  .detail-row { display: flex; justify-content: space-between; align-items: flex-start; padding: 8px 0; border-bottom: 1px solid var(--border); gap: 16px; }
   .detail-row:last-child { border-bottom: none; }
   .detail-key { font-size: 12px; color: var(--text3); flex-shrink: 0; }
   .detail-val { font-size: 12px; color: var(--text); text-align: right; font-weight: 500; }
-
-  .action-box {
-    background: var(--bg2);
-    border: 1px solid var(--border);
-    border-radius: var(--radius-sm);
-    padding: 12px 14px;
-    font-size: 13px;
-    color: var(--text);
-    line-height: 1.6;
-  }
-
-  .history-item {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    padding: 8px 0;
-    border-bottom: 1px solid var(--border);
-  }
+  .action-box { background: var(--bg2); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 12px 14px; font-size: 13px; color: var(--text); line-height: 1.6; }
+  .history-item { display: flex; align-items: center; gap: 12px; padding: 8px 0; border-bottom: 1px solid var(--border); }
   .history-item:last-child { border-bottom: none; }
-
   .history-date { font-size: 11px; color: var(--text3); min-width: 90px; font-family: 'JetBrains Mono', monospace; }
 
-  /* LOADING */
-  .loading {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 60px;
-    color: var(--text3);
-    font-size: 13px;
-    gap: 10px;
-  }
-
-  .spinner {
-    width: 16px;
-    height: 16px;
-    border: 2px solid var(--border2);
-    border-top-color: var(--text);
-    border-radius: 50%;
-    animation: spin 0.7s linear infinite;
-  }
-
+  .loading { display: flex; align-items: center; justify-content: center; padding: 60px; color: var(--text3); font-size: 13px; gap: 10px; }
+  .spinner { width: 16px; height: 16px; border: 2px solid var(--border2); border-top-color: var(--text); border-radius: 50%; animation: spin 0.7s linear infinite; }
   @keyframes spin { to { transform: rotate(360deg); } }
 
-  .empty {
-    padding: 48px;
-    text-align: center;
-    color: var(--text3);
-    font-size: 13px;
-  }
-
+  .empty { padding: 48px; text-align: center; color: var(--text3); font-size: 13px; }
   .empty-icon { font-size: 28px; margin-bottom: 10px; }
 
-  /* TOAST */
-  .toast {
-    position: fixed;
-    bottom: 24px;
-    right: 24px;
-    background: var(--text);
-    color: var(--bg);
-    padding: 10px 16px;
-    border-radius: var(--radius-sm);
-    font-size: 13px;
-    font-weight: 500;
-    z-index: 999;
-    opacity: 0;
-    transform: translateY(8px);
-    transition: all 0.2s;
-    pointer-events: none;
-  }
+  .toast { position: fixed; bottom: 24px; right: 24px; background: var(--text); color: var(--bg); padding: 10px 16px; border-radius: var(--radius-sm); font-size: 13px; font-weight: 500; z-index: 999; opacity: 0; transform: translateY(8px); transition: all 0.2s; pointer-events: none; }
   .toast.show { opacity: 1; transform: translateY(0); }
 
-  /* REVISION BADGE */
-  .revision-badge {
-    display: inline-flex;
-    align-items: center;
-    gap: 4px;
-    font-size: 10px;
-    font-weight: 600;
-    padding: 2px 7px;
-    border-radius: 20px;
-    background: var(--yellow-bg);
-    color: var(--yellow);
-    border: 1px solid var(--yellow-border);
-  }
-
+  .revision-badge { display: inline-flex; align-items: center; gap: 4px; font-size: 10px; font-weight: 600; padding: 2px 7px; border-radius: 20px; background: var(--yellow-bg); color: var(--yellow); border: 1px solid var(--yellow-border); }
   .mono { font-family: 'JetBrains Mono', monospace; font-size: 12px; }
-
-  /* SCORE BAR */
   .score-wrap { display: flex; align-items: center; gap: 8px; }
   .score-dots { display: flex; gap: 3px; }
-  .score-dot {
-    width: 8px; height: 8px;
-    border-radius: 50%;
-    background: var(--bg3);
-  }
+  .score-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--bg3); }
   .score-dot.filled { background: var(--text); }
   .score-num { font-size: 11px; color: var(--text3); }
 
@@ -636,14 +250,11 @@
 </head>
 <body>
 
-<!-- SIDEBAR -->
 <aside class="sidebar">
   <div class="sidebar-logo">
     <div class="logo-mark">
       <div class="logo-icon">
-        <svg viewBox="0 0 14 14" fill="none">
-          <path d="M7 1L13 4V10L7 13L1 10V4L7 1Z" fill="white"/>
-        </svg>
+        <svg viewBox="0 0 14 14" fill="none"><path d="M7 1L13 4V10L7 13L1 10V4L7 1Z" fill="white"/></svg>
       </div>
       <div>
         <div class="logo-name">PostSale</div>
@@ -666,6 +277,11 @@
       <svg viewBox="0 0 15 15" fill="none"><path d="M7.5 1v13M1 7.5h13" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
       <span id="nav-nuevo">Nuevo análisis</span>
     </div>
+    <div class="nav-item" onclick="showView('tareas')">
+      <svg viewBox="0 0 15 15" fill="none"><rect x="1" y="1" width="13" height="13" rx="2" stroke="currentColor" stroke-width="1.2"/><path d="M4 7.5l2.5 2.5L11 5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <span id="nav-tareas">Tareas</span>
+      <span id="badge-tareas" style="background:var(--red-bg);color:var(--red);font-size:10px;font-weight:600;padding:1px 6px;border-radius:20px;margin-left:auto;display:none">0</span>
+    </div>
   </nav>
 
   <div class="sidebar-footer">
@@ -676,7 +292,6 @@
   </div>
 </aside>
 
-<!-- MAIN -->
 <main class="main">
   <div class="topbar">
     <div class="topbar-title" id="topbar-title">Dashboard</div>
@@ -690,7 +305,7 @@
 
   <div class="content">
 
-    <!-- DASHBOARD VIEW -->
+    <!-- DASHBOARD -->
     <div id="view-dashboard">
       <div class="metrics-grid" id="metrics-grid">
         <div class="loading"><div class="spinner"></div></div>
@@ -704,57 +319,7 @@
       </div>
     </div>
 
-    <!-- CLIENTES VIEW -->
-     <!-- NUEVO ANÁLISIS VIEW -->
-<div id="view-nuevo" style="display:none">
-  <div class="section">
-    <div class="section-header">
-      <span class="section-title" id="section-nuevo">Nuevo análisis</span>
-    </div>
-    <div style="padding:24px;max-width:560px">
-
-      <div style="margin-bottom:20px">
-        <label style="font-size:12px;font-weight:600;color:var(--color-text-secondary);display:block;margin-bottom:6px" id="label-empresa">Empresa</label>
-        <input type="text" id="input-nombre" placeholder="Ej: Distribuidora del Norte S.A." style="width:100%">
-      </div>
-
-      <div style="margin-bottom:20px">
-        <label style="font-size:12px;font-weight:600;color:var(--color-text-secondary);display:block;margin-bottom:6px" id="label-plan">Plan</label>
-        <select id="input-plan" style="width:100%">
-          <option value="Starter">Starter</option>
-          <option value="Professional" selected>Professional</option>
-          <option value="Enterprise">Enterprise</option>
-        </select>
-      </div>
-
-      <div style="margin-bottom:20px">
-        <label style="font-size:12px;font-weight:600;color:var(--color-text-secondary);display:block;margin-bottom:6px" id="label-tipo">Tipo de interacción</label>
-        <select id="input-tipo" style="width:100%">
-          <option value="email">Email</option>
-          <option value="ticket">Ticket de soporte</option>
-          <option value="inactividad_login">Inactividad / Sin login</option>
-        </select>
-      </div>
-
-      <div style="margin-bottom:20px">
-        <label style="font-size:12px;font-weight:600;color:var(--color-text-secondary);display:block;margin-bottom:6px" id="label-dias">Días desde última conexión</label>
-        <input type="number" id="input-dias" value="0" min="0" style="width:100%">
-      </div>
-
-      <div style="margin-bottom:24px">
-        <label style="font-size:12px;font-weight:600;color:var(--color-text-secondary);display:block;margin-bottom:6px" id="label-mensaje">Mensaje o descripción de la interacción</label>
-        <textarea id="input-mensaje" rows="5" placeholder="Pegá el texto del email, ticket o describí la situación del cliente..." style="width:100%;font-family:var(--font-sans);font-size:14px;padding:10px 14px;border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-md);background:var(--color-background-primary);color:var(--color-text-primary);resize:vertical"></textarea>
-      </div>
-
-      <button onclick="analizarNuevo()" id="btn-analizar" class="btn btn-primary" style="width:100%;justify-content:center;padding:10px">
-        <svg viewBox="0 0 15 15" fill="none" style="width:14px;height:14px"><path d="M7.5 1L14 7.5L7.5 14M1 7.5h13" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-        <span id="btn-analizar-text">Analizar riesgo</span>
-      </button>
-
-      <div id="resultado-nuevo" style="margin-top:24px;display:none"></div>
-    </div>
-  </div>
-</div>
+    <!-- CLIENTES -->
     <div id="view-clientes" style="display:none">
       <div class="section">
         <div class="section-header">
@@ -765,10 +330,76 @@
       </div>
     </div>
 
+    <!-- NUEVO ANÁLISIS -->
+    <div id="view-nuevo" style="display:none">
+      <div class="section">
+        <div class="section-header">
+          <span class="section-title" id="section-nuevo">Nuevo análisis</span>
+        </div>
+        <div style="padding:24px;max-width:560px">
+          <div style="margin-bottom:20px">
+            <label style="font-size:12px;font-weight:600;color:var(--text2);display:block;margin-bottom:6px" id="label-empresa">Empresa</label>
+            <input type="text" id="input-nombre" placeholder="Ej: Distribuidora del Norte S.A." style="width:100%">
+          </div>
+          <div style="margin-bottom:20px">
+            <label style="font-size:12px;font-weight:600;color:var(--text2);display:block;margin-bottom:6px" id="label-plan">Plan</label>
+            <select id="input-plan" style="width:100%">
+              <option value="Starter">Starter</option>
+              <option value="Professional" selected>Professional</option>
+              <option value="Enterprise">Enterprise</option>
+            </select>
+          </div>
+          <div style="margin-bottom:20px">
+            <label style="font-size:12px;font-weight:600;color:var(--text2);display:block;margin-bottom:6px" id="label-tipo">Tipo de interacción</label>
+            <select id="input-tipo" style="width:100%">
+              <option value="email">Email</option>
+              <option value="ticket">Ticket de soporte</option>
+              <option value="inactividad_login">Inactividad / Sin login</option>
+              <option value="whatsapp">WhatsApp</option>
+            </select>
+          </div>
+          <div style="margin-bottom:20px">
+            <label style="font-size:12px;font-weight:600;color:var(--text2);display:block;margin-bottom:6px" id="label-dias">Días desde última conexión</label>
+            <input type="number" id="input-dias" value="0" min="0" style="width:100%">
+          </div>
+          <div style="margin-bottom:24px">
+            <label style="font-size:12px;font-weight:600;color:var(--text2);display:block;margin-bottom:6px" id="label-mensaje">Mensaje o descripción</label>
+            <textarea id="input-mensaje" rows="5" placeholder="Pegá el texto del WhatsApp, email, ticket o describí la situación del cliente..." style="width:100%;font-family:'Inter',sans-serif;font-size:14px;padding:10px 14px;border:0.5px solid var(--border);border-radius:8px;background:var(--bg);color:var(--text);resize:vertical"></textarea>
+          </div>
+          <button onclick="analizarNuevo()" id="btn-analizar" class="btn btn-primary" style="width:100%;justify-content:center;padding:10px">
+            <svg viewBox="0 0 15 15" fill="none" style="width:14px;height:14px"><path d="M7.5 1L14 7.5L7.5 14M1 7.5h13" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            <span id="btn-analizar-text">Analizar riesgo</span>
+          </button>
+          <div id="resultado-nuevo" style="margin-top:24px;display:none"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAREAS -->
+    <div id="view-tareas" style="display:none">
+      <div class="section">
+        <div class="section-header">
+          <span class="section-title" id="section-tareas">Tareas pendientes</span>
+          <div style="display:flex;gap:8px;align-items:center">
+            <select id="filtro-tareas" onchange="filtrarTareas()" style="font-size:12px;padding:4px 8px;border-radius:6px;border:0.5px solid var(--border2);background:var(--bg);color:var(--text)">
+              <option value="pendiente">Pendientes</option>
+              <option value="en_curso">En curso</option>
+              <option value="completada">Completadas</option>
+              <option value="descartada">Descartadas</option>
+              <option value="">Todas</option>
+            </select>
+            <span class="section-count" id="tareas-count">—</span>
+          </div>
+        </div>
+        <div id="tareas-resumen-bar" style="padding:16px 20px;border-bottom:0.5px solid var(--border);display:grid;grid-template-columns:repeat(4,1fr);gap:12px"></div>
+        <div id="tareas-lista"></div>
+      </div>
+    </div>
+
   </div>
 </main>
 
-<!-- MODAL FICHA CLIENTE -->
+<!-- MODAL FICHA CLIENTE (legacy) -->
 <div class="modal-overlay" id="modal" onclick="closeModal(event)">
   <div class="modal" id="modal-content">
     <div class="modal-header">
@@ -787,7 +418,6 @@
   </div>
 </div>
 
-<!-- TOAST -->
 <div class="toast" id="toast"></div>
 
 <script>
@@ -797,793 +427,532 @@ let currentClients = [];
 
 const T = {
   es: {
-    dashboard: 'Dashboard', clientes: 'Clientes', actualizar: 'Actualizar',
-    urgentes: 'Clientes urgentes', todos: 'Todos los clientes',
-    total: 'Total', criticos: 'Críticos', alto: 'Riesgo alto',
-    medio: 'Riesgo medio', bajo: 'Riesgo bajo',
-    cliente: 'Cliente', riesgo: 'Riesgo', probabilidad: 'Probabilidad',
-    tendencia: 'Tendencia', accion: 'Acción recomendada',
-    analisis: 'Análisis', fecha: 'Fecha', score: 'Confianza IA',
-    intentos: 'Intentos', tiempo: 'Tiempo',
-    sin_analisis: 'Sin análisis', empeorando: '↑ Empeorando',
-    mejorando: '↓ Mejorando', estable: '→ Estable', sin_datos: '—',
-    historial: 'Historial de riesgo', accion_csm: 'Acción para el gestor',
-    detalles: 'Detalles del análisis', revision: 'Revisión manual',
-    cargando: 'Cargando...', sin_clientes: 'No hay clientes registrados.',
-    churn_intelligence: 'Churn Intelligence',
-    nav_main: 'Principal',
+    dashboard:'Dashboard',clientes:'Clientes',actualizar:'Actualizar',
+    urgentes:'Clientes urgentes',todos:'Todos los clientes',
+    total:'Total',criticos:'Críticos',alto:'Riesgo alto',medio:'Riesgo medio',bajo:'Riesgo bajo',
+    cliente:'Cliente',riesgo:'Riesgo',probabilidad:'Probabilidad',
+    tendencia:'Tendencia',accion:'Acción recomendada',
+    analisis:'Análisis',fecha:'Fecha',score:'Confianza IA',
+    sin_analisis:'Sin análisis',empeorando:'↑ Empeorando',
+    mejorando:'↓ Mejorando',estable:'→ Estable',sin_datos:'—',
+    historial:'Historial de riesgo',accion_csm:'Acción para el gestor',
+    detalles:'Detalles del análisis',revision:'Revisión manual',
+    cargando:'Cargando...',sin_clientes:'No hay clientes registrados.',
+    churn_intelligence:'Churn Intelligence',nav_main:'Principal',
   },
   en: {
-    dashboard: 'Dashboard', clientes: 'Clients', actualizar: 'Refresh',
-    urgentes: 'Urgent clients', todos: 'All clients',
-    total: 'Total', criticos: 'Critical', alto: 'High risk',
-    medio: 'Medium risk', bajo: 'Low risk',
-    cliente: 'Client', riesgo: 'Risk', probabilidad: 'Probability',
-    tendencia: 'Trend', accion: 'Recommended action',
-    analisis: 'Analysis', fecha: 'Date', score: 'AI confidence',
-    intentos: 'Attempts', tiempo: 'Time',
-    sin_analisis: 'No analysis', empeorando: '↑ Worsening',
-    mejorando: '↓ Improving', estable: '→ Stable', sin_datos: '—',
-    historial: 'Risk history', accion_csm: 'Action for CSM',
-    detalles: 'Analysis details', revision: 'Manual review',
-    cargando: 'Loading...', sin_clientes: 'No clients registered.',
-    churn_intelligence: 'Churn Intelligence',
-    nav_main: 'Main',
+    dashboard:'Dashboard',clientes:'Clients',actualizar:'Refresh',
+    urgentes:'Urgent clients',todos:'All clients',
+    total:'Total',criticos:'Critical',alto:'High risk',medio:'Medium risk',bajo:'Low risk',
+    cliente:'Client',riesgo:'Risk',probabilidad:'Probability',
+    tendencia:'Trend',accion:'Recommended action',
+    analisis:'Analysis',fecha:'Date',score:'AI confidence',
+    sin_analisis:'No analysis',empeorando:'↑ Worsening',
+    mejorando:'↓ Improving',estable:'→ Stable',sin_datos:'—',
+    historial:'Risk history',accion_csm:'Action for CSM',
+    detalles:'Analysis details',revision:'Manual review',
+    cargando:'Loading...',sin_clientes:'No clients registered.',
+    churn_intelligence:'Churn Intelligence',nav_main:'Main',
   }
 };
 
-function t(key) { return T[lang][key] || key; }
+function t(key){return T[lang][key]||key;}
 
-function setLang(l) {
-  lang = l;
-  document.getElementById('btn-es').classList.toggle('active', l === 'es');
-  document.getElementById('btn-en').classList.toggle('active', l === 'en');
+function setLang(l){
+  lang=l;
+  document.getElementById('btn-es').classList.toggle('active',l==='es');
+  document.getElementById('btn-en').classList.toggle('active',l==='en');
   updateTexts();
   renderAll();
 }
 
-function updateTexts() {
-  document.getElementById('logo-tagline').textContent = t('churn_intelligence');
-  document.getElementById('nav-dashboard').textContent = t('dashboard');
-  document.getElementById('nav-clientes').textContent = t('clientes');
-  document.getElementById('btn-refresh').textContent = t('actualizar');
-  document.getElementById('nav-section-main').textContent = t('nav_main');
-  document.getElementById('nav-nuevo').textContent = lang === 'es' ? 'Nuevo análisis' : 'New analysis';
-document.getElementById('section-nuevo').textContent = lang === 'es' ? 'Nuevo análisis' : 'New analysis';
-document.getElementById('label-empresa').textContent = lang === 'es' ? 'Empresa' : 'Company';
-document.getElementById('label-plan').textContent = lang === 'es' ? 'Plan' : 'Plan';
-document.getElementById('label-tipo').textContent = lang === 'es' ? 'Tipo de interacción' : 'Interaction type';
-document.getElementById('label-dias').textContent = lang === 'es' ? 'Días desde última conexión' : 'Days since last login';
-document.getElementById('label-mensaje').textContent = lang === 'es' ? 'Mensaje o descripción' : 'Message or description';
-document.getElementById('btn-analizar-text').textContent = lang === 'es' ? 'Analizar riesgo' : 'Analyze risk';
+function updateTexts(){
+  document.getElementById('logo-tagline').textContent=t('churn_intelligence');
+  document.getElementById('nav-dashboard').textContent=t('dashboard');
+  document.getElementById('nav-clientes').textContent=t('clientes');
+  document.getElementById('btn-refresh').textContent=t('actualizar');
+  document.getElementById('nav-section-main').textContent=t('nav_main');
+  document.getElementById('nav-nuevo').textContent=lang==='es'?'Nuevo análisis':'New analysis';
+  document.getElementById('nav-tareas').textContent=lang==='es'?'Tareas':'Tasks';
+  document.getElementById('section-nuevo').textContent=lang==='es'?'Nuevo análisis':'New analysis';
+  document.getElementById('section-tareas').textContent=lang==='es'?'Tareas pendientes':'Pending tasks';
+  document.getElementById('label-empresa').textContent=lang==='es'?'Empresa':'Company';
+  document.getElementById('label-plan').textContent='Plan';
+  document.getElementById('label-tipo').textContent=lang==='es'?'Tipo de interacción':'Interaction type';
+  document.getElementById('label-dias').textContent=lang==='es'?'Días desde última conexión':'Days since last login';
+  document.getElementById('label-mensaje').textContent=lang==='es'?'Mensaje o descripción':'Message or description';
+  document.getElementById('btn-analizar-text').textContent=lang==='es'?'Analizar riesgo':'Analyze risk';
 }
 
-function showView(view) {
-  document.getElementById('view-dashboard').style.display = view === 'dashboard' ? '' : 'none';
-  document.getElementById('view-clientes').style.display = view === 'clientes' ? '' : 'none';
-  document.getElementById('view-nuevo').style.display = view === 'nuevo' ? '' : 'none';
-  document.getElementById('topbar-title').textContent = t(view === 'dashboard' ? 'dashboard' : 'clientes');
-  document.querySelectorAll('.nav-item').forEach((el, i) => {
-    el.classList.toggle('active', (i === 0 && view === 'dashboard') || (i === 1 && view === 'clientes'));
+function showView(view){
+  ['dashboard','clientes','nuevo','tareas'].forEach(v=>{
+    document.getElementById('view-'+v).style.display=v===view?'':'none';
   });
+  const titles={dashboard:t('dashboard'),clientes:t('clientes'),nuevo:lang==='es'?'Nuevo análisis':'New analysis',tareas:lang==='es'?'Tareas':'Tasks'};
+  document.getElementById('topbar-title').textContent=titles[view]||'';
+  document.querySelectorAll('.nav-item').forEach((el,i)=>{
+    el.classList.toggle('active',(i===0&&view==='dashboard')||(i===1&&view==='clientes')||(i===2&&view==='nuevo')||(i===3&&view==='tareas'));
+  });
+  if(view==='tareas') renderVistaTareas();
 }
 
-function riskClass(nivel) {
-  if (!nivel) return 'sin';
-  const map = { 'Crítico': 'critico', 'Critical': 'critico', 'Alto': 'alto', 'High': 'alto', 'Medio': 'medio', 'Medium': 'medio', 'Bajo': 'bajo', 'Low': 'bajo' };
-  return map[nivel] || 'sin';
+function riskClass(nivel){
+  if(!nivel)return'sin';
+  const map={'Crítico':'critico','Critical':'critico','Alto':'alto','High':'alto','Medio':'medio','Medium':'medio','Bajo':'bajo','Low':'bajo'};
+  return map[nivel]||'sin';
 }
 
-function riskLabel(nivel) {
-  if (!nivel) return t('sin_analisis');
-  if (lang === 'en') {
-    const map = { 'Crítico': 'Critical', 'Alto': 'High', 'Medio': 'Medium', 'Bajo': 'Low' };
-    return map[nivel] || nivel;
-  }
+function riskLabel(nivel){
+  if(!nivel)return t('sin_analisis');
+  if(lang==='en'){const map={'Crítico':'Critical','Alto':'High','Medio':'Medium','Bajo':'Low'};return map[nivel]||nivel;}
   return nivel;
 }
 
-function probColor(p) {
-  if (p >= 75) return 'var(--red)';
-  if (p >= 50) return 'var(--orange)';
-  if (p >= 25) return 'var(--yellow)';
-  return 'var(--green)';
+function probColor(p){
+  if(p>=75)return'var(--red)';
+  if(p>=50)return'var(--orange)';
+  if(p>=25)return'var(--yellow)';
+  return'var(--green)';
 }
 
-function trendLabel(trend) {
-  const map = { empeorando: t('empeorando'), mejorando: t('mejorando'), estable: t('estable'), sin_datos: t('sin_datos') };
-  return map[trend] || '—';
+function formatDate(iso){
+  if(!iso)return'—';
+  try{const d=new Date(iso);return d.toLocaleDateString(lang==='es'?'es-AR':'en-US',{day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit'});}
+  catch{return iso.slice(0,16).replace('T',' ');}
 }
 
-function trendClass(trend) {
-  return trend === 'empeorando' ? 'up' : trend === 'mejorando' ? 'down' : 'flat';
+function scoreDots(score){
+  let html='<div class="score-wrap"><div class="score-dots">';
+  for(let i=1;i<=10;i++) html+=`<div class="score-dot${i<=score?' filled':''}"></div>`;
+  return html+`</div><span class="score-num">${score}/10</span></div>`;
 }
 
-function formatDate(iso) {
-  if (!iso) return '—';
-  try {
-    const d = new Date(iso);
-    return d.toLocaleDateString(lang === 'es' ? 'es-AR' : 'en-US', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' });
-  } catch { return iso.slice(0, 16).replace('T', ' '); }
-}
-
-function scoreDots(score) {
-  let html = '<div class="score-wrap"><div class="score-dots">';
-  for (let i = 1; i <= 10; i++) {
-    html += `<div class="score-dot${i <= score ? ' filled' : ''}"></div>`;
-  }
-  html += `</div><span class="score-num">${score}/10</span></div>`;
-  return html;
-}
-
-async function loadAll() {
-  try {
-    const res = await fetch(`${API}/clientes`);
-    if (!res.ok) throw new Error('API error');
-    currentClients = await res.json();
+async function loadAll(){
+  try{
+    const res=await fetch(`${API}/clientes`);
+    if(!res.ok)throw new Error();
+    currentClients=await res.json();
     renderAll();
-  } catch (e) {
-    showToast(lang === 'es' ? 'Error conectando con la API' : 'Error connecting to API');
+    const resumen=await cargarResumenTareas();
+    if(resumen)actualizarBadgeTareas(resumen.pendientes);
+  }catch(e){
+    showToast(lang==='es'?'Error conectando con la API':'Error connecting to API');
   }
 }
 
-function renderAll() {
-  renderMetrics();
-  renderUrgentes();
-  renderTodos();
+function renderAll(){renderMetrics();renderUrgentes();renderTodos();}
+
+function renderMetrics(){
+  const criticos=currentClients.filter(c=>c.ultimo_nivel_riesgo==='Crítico').length;
+  const altos=currentClients.filter(c=>c.ultimo_nivel_riesgo==='Alto').length;
+  const medios=currentClients.filter(c=>c.ultimo_nivel_riesgo==='Medio').length;
+  const bajos=currentClients.filter(c=>c.ultimo_nivel_riesgo==='Bajo').length;
+  document.getElementById('metrics-grid').innerHTML=`
+    <div class="metric-card"><div class="metric-label">${t('total')}</div><div class="metric-value">${currentClients.length}</div><div class="metric-sub">${t('clientes')}</div></div>
+    <div class="metric-card critico"><div class="metric-label">${t('criticos')}</div><div class="metric-value">${criticos}</div><div class="metric-sub">${lang==='es'?'Acción inmediata':'Immediate action'}</div></div>
+    <div class="metric-card alto"><div class="metric-label">${t('alto')}</div><div class="metric-value">${altos}</div><div class="metric-sub">${lang==='es'?'Seguimiento urgente':'Urgent follow-up'}</div></div>
+    <div class="metric-card medio"><div class="metric-label">${t('medio')}</div><div class="metric-value">${medios}</div><div class="metric-sub">${lang==='es'?'Monitorear':'Monitor'}</div></div>
+    <div class="metric-card bajo"><div class="metric-label">${t('bajo')}</div><div class="metric-value">${bajos}</div><div class="metric-sub">${lang==='es'?'Saludables':'Healthy'}</div></div>`;
 }
 
-function renderMetrics() {
-  const criticos = currentClients.filter(c => c.ultimo_nivel_riesgo === 'Crítico').length;
-  const altos = currentClients.filter(c => c.ultimo_nivel_riesgo === 'Alto').length;
-  const medios = currentClients.filter(c => c.ultimo_nivel_riesgo === 'Medio').length;
-  const bajos = currentClients.filter(c => c.ultimo_nivel_riesgo === 'Bajo').length;
-
-  document.getElementById('metrics-grid').innerHTML = `
-    <div class="metric-card">
-      <div class="metric-label">${t('total')}</div>
-      <div class="metric-value">${currentClients.length}</div>
-      <div class="metric-sub">${t('clientes')}</div>
-    </div>
-    <div class="metric-card critico">
-      <div class="metric-label">${t('criticos')}</div>
-      <div class="metric-value">${criticos}</div>
-      <div class="metric-sub">${lang === 'es' ? 'Acción inmediata' : 'Immediate action'}</div>
-    </div>
-    <div class="metric-card alto">
-      <div class="metric-label">${t('alto')}</div>
-      <div class="metric-value">${altos}</div>
-      <div class="metric-sub">${lang === 'es' ? 'Seguimiento urgente' : 'Urgent follow-up'}</div>
-    </div>
-    <div class="metric-card medio">
-      <div class="metric-label">${t('medio')}</div>
-      <div class="metric-value">${medios}</div>
-      <div class="metric-sub">${lang === 'es' ? 'Monitorear' : 'Monitor'}</div>
-    </div>
-    <div class="metric-card bajo">
-      <div class="metric-label">${t('bajo')}</div>
-      <div class="metric-value">${bajos}</div>
-      <div class="metric-sub">${lang === 'es' ? 'Saludables' : 'Healthy'}</div>
-    </div>`;
-}
-
-function clientTableRow(c) {
-  const rc = riskClass(c.ultimo_nivel_riesgo);
-  const prob = c.ultima_probabilidad_churn;
-  return `<tr onclick="abrirHistorial(${c.id})">
-    <td>
-      <div class="client-name">${c.nombre}</div>
-      <div class="client-plan">${c.plan_actual}</div>
-    </td>
-    <td>
-      <span class="badge ${rc}">
-        <span class="badge-dot"></span>
-        ${riskLabel(c.ultimo_nivel_riesgo)}
-      </span>
-    </td>
-    <td>
-      ${prob !== null && prob !== undefined ? `
-      <div class="prob-wrap">
-        <div class="prob-bar"><div class="prob-fill" style="width:${prob}%;background:${probColor(prob)}"></div></div>
-        <span class="prob-num">${prob}%</span>
-      </div>` : '<span style="color:var(--text3)">—</span>'}
-    </td>
-    <td>
-      <div class="action-text">${c.ultima_accion_recomendada || '—'}</div>
-    </td>
-    <td>
-      <span class="mono" style="color:var(--text3)">${formatDate(c.fecha_ultimo_analisis)}</span>
-    </td>
+function clientTableRow(c){
+  const rc=riskClass(c.ultimo_nivel_riesgo);
+  const prob=c.ultima_probabilidad_churn;
+  return`<tr onclick="abrirHistorial(${c.id})">
+    <td><div class="client-name">${c.nombre}</div><div class="client-plan">${c.plan_actual}</div></td>
+    <td><span class="badge ${rc}"><span class="badge-dot"></span>${riskLabel(c.ultimo_nivel_riesgo)}</span></td>
+    <td>${prob!=null?`<div class="prob-wrap"><div class="prob-bar"><div class="prob-fill" style="width:${prob}%;background:${probColor(prob)}"></div></div><span class="prob-num">${prob}%</span></div>`:'<span style="color:var(--text3)">—</span>'}</td>
+    <td><div class="action-text">${c.ultima_accion_recomendada||'—'}</div></td>
+    <td><span class="mono" style="color:var(--text3)">${formatDate(c.fecha_ultimo_analisis)}</span></td>
   </tr>`;
 }
 
-function tableHeader() {
-  return `<thead><tr>
-    <th>${t('cliente')}</th>
-    <th>${t('riesgo')}</th>
-    <th>${t('probabilidad')}</th>
-    <th>${t('accion')}</th>
-    <th>${t('fecha')}</th>
-  </tr></thead>`;
+function tableHeader(){
+  return`<thead><tr><th>${t('cliente')}</th><th>${t('riesgo')}</th><th>${t('probabilidad')}</th><th>${t('accion')}</th><th>${t('fecha')}</th></tr></thead>`;
 }
 
-function renderUrgentes() {
-  const urgentes = currentClients.filter(c => ['Crítico','Alto'].includes(c.ultimo_nivel_riesgo));
-  document.getElementById('urgentes-count').textContent = urgentes.length;
-  document.getElementById('section-urgentes').textContent = t('urgentes');
-
-  if (urgentes.length === 0) {
-    document.getElementById('urgentes-table').innerHTML = `<div class="empty"><div class="empty-icon">✓</div>${lang === 'es' ? 'Sin clientes en riesgo alto o crítico.' : 'No clients at high or critical risk.'}</div>`;
-    return;
-  }
-
-  document.getElementById('urgentes-table').innerHTML = `<table>${tableHeader()}<tbody>${urgentes.map(clientTableRow).join('')}</tbody></table>`;
+function renderUrgentes(){
+  const urgentes=currentClients.filter(c=>['Crítico','Alto'].includes(c.ultimo_nivel_riesgo));
+  document.getElementById('urgentes-count').textContent=urgentes.length;
+  document.getElementById('section-urgentes').textContent=t('urgentes');
+  document.getElementById('urgentes-table').innerHTML=urgentes.length
+    ?`<table>${tableHeader()}<tbody>${urgentes.map(clientTableRow).join('')}</tbody></table>`
+    :`<div class="empty"><div class="empty-icon">✓</div>${lang==='es'?'Sin clientes en riesgo alto o crítico.':'No clients at high or critical risk.'}</div>`;
 }
 
-function renderTodos() {
-  document.getElementById('todos-count').textContent = currentClients.length;
-  document.getElementById('section-todos').textContent = t('todos');
-
-  if (currentClients.length === 0) {
-    document.getElementById('todos-table').innerHTML = `<div class="empty"><div class="empty-icon">○</div>${t('sin_clientes')}</div>`;
-    return;
-  }
-
-  document.getElementById('todos-table').innerHTML = `<table>${tableHeader()}<tbody>${currentClients.map(clientTableRow).join('')}</tbody></table>`;
+function renderTodos(){
+  document.getElementById('todos-count').textContent=currentClients.length;
+  document.getElementById('section-todos').textContent=t('todos');
+  document.getElementById('todos-table').innerHTML=currentClients.length
+    ?`<table>${tableHeader()}<tbody>${currentClients.map(clientTableRow).join('')}</tbody></table>`
+    :`<div class="empty"><div class="empty-icon">○</div>${t('sin_clientes')}</div>`;
 }
 
-async function openModal(clientId) {
-  document.getElementById('modal').classList.add('open');
-  document.getElementById('modal-body').innerHTML = `<div class="loading"><div class="spinner"></div>${t('cargando')}</div>`;
+function closeModal(e){if(e.target===document.getElementById('modal'))document.getElementById('modal').classList.remove('open');}
 
-  const client = currentClients.find(c => c.id === clientId);
-  if (client) {
-    document.getElementById('modal-name').textContent = client.nombre;
-    document.getElementById('modal-plan').textContent = client.plan_actual;
-    const rc = riskClass(client.ultimo_nivel_riesgo);
-    document.getElementById('modal-badge').innerHTML = client.ultimo_nivel_riesgo
-      ? `<span class="badge ${rc}"><span class="badge-dot"></span>${riskLabel(client.ultimo_nivel_riesgo)}</span>` : '';
-  }
-
-  try {
-    const res = await fetch(`${API}/clientes/${clientId}`);
-    const data = await res.json();
-    renderModal(data);
-  } catch {
-    document.getElementById('modal-body').innerHTML = `<div class="empty">${lang === 'es' ? 'Error cargando ficha.' : 'Error loading details.'}</div>`;
-  }
+function showToast(msg){
+  const el=document.getElementById('toast');
+  el.textContent=msg;el.classList.add('show');
+  setTimeout(()=>el.classList.remove('show'),3000);
 }
 
-function renderModal(data) {
-  const h = data.historial;
-  const ultimo = h[0];
+// ═══════════════════════════════════════════
+// NUEVO ANÁLISIS
+// ═══════════════════════════════════════════
 
-  let html = '';
+async function analizarNuevo(){
+  const nombre=document.getElementById('input-nombre').value.trim();
+  const plan=document.getElementById('input-plan').value;
+  const tipo=document.getElementById('input-tipo').value;
+  const dias=parseInt(document.getElementById('input-dias').value)||0;
+  const mensaje=document.getElementById('input-mensaje').value.trim();
 
-  if (ultimo) {
-    html += `<div class="modal-section">
-      <div class="modal-section-title">${t('accion_csm')}</div>
-      <div class="action-box">${ultimo.accion_recomendada}</div>
-    </div>`;
+  if(!nombre||!mensaje){showToast(lang==='es'?'Completá el nombre y el mensaje':'Fill in the name and message');return;}
 
-    html += `<div class="modal-section">
-      <div class="modal-section-title">${t('detalles')}</div>
-      <div class="detail-row"><span class="detail-key">${t('riesgo')}</span>
-        <span class="detail-val"><span class="badge ${riskClass(ultimo.nivel_riesgo)}"><span class="badge-dot"></span>${riskLabel(ultimo.nivel_riesgo)}</span></span></div>
-      <div class="detail-row"><span class="detail-key">${t('probabilidad')}</span>
-        <span class="detail-val">${ultimo.probabilidad_churn_porcentaje}%</span></div>
-      <div class="detail-row"><span class="detail-key">${t('score')}</span>
-        <span class="detail-val">${scoreDots(ultimo.score_confianza)}</span></div>
-      <div class="detail-row"><span class="detail-key">${t('tendencia')}</span>
-        <span class="detail-val"><span class="trend ${trendClass(data.tendencia)}">${trendLabel(data.tendencia)}</span></span></div>
-      ${ultimo.requiere_revision_manual ? `<div class="detail-row"><span class="detail-key">${t('revision')}</span>
-        <span class="detail-val"><span class="revision-badge">⚠ ${lang === 'es' ? 'Requerida' : 'Required'}</span></span></div>` : ''}
-    </div>`;
-  }
+  const btn=document.getElementById('btn-analizar');
+  const btnText=document.getElementById('btn-analizar-text');
+  btn.disabled=true;
+  btnText.textContent=lang==='es'?'Analizando...':'Analyzing...';
 
-  if (h.length > 1) {
-    html += `<div class="modal-section">
-      <div class="modal-section-title">${t('historial')} (${h.length})</div>`;
-    h.forEach(item => {
-      html += `<div class="history-item">
-        <span class="history-date">${formatDate(item.fecha)}</span>
-        <span class="badge ${riskClass(item.nivel_riesgo)} " style="font-size:10px">
-          <span class="badge-dot"></span>${riskLabel(item.nivel_riesgo)}
-        </span>
-        <span style="font-size:11px;color:var(--text3)">${item.probabilidad_churn_porcentaje}%</span>
-      </div>`;
-    });
-    html += '</div>';
-  }
+  try{
+    const tipoApi=tipo==='whatsapp'?'email':tipo;
+    const mensajeConTipo=tipo==='whatsapp'?`[WhatsApp] ${mensaje}`:mensaje;
 
-  if (!ultimo) {
-    html = `<div class="empty">${t('sin_analisis')}</div>`;
-  }
+    const clienteRes=await fetch(`${API}/clientes`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({nombre,plan_actual:plan})});
+    const clienteData=await clienteRes.json();
+    const clienteId=clienteData.cliente_id;
 
-  document.getElementById('modal-body').innerHTML = html;
-}
+    const analisisRes=await fetch(`${API}/analizar/${clienteId}`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({interacciones:[{tipo_interaccion:tipoApi,texto_mensaje:mensajeConTipo,dias_desde_ultima_conexion:dias}]})});
+    const resultado=await analisisRes.json();
 
-function closeModal(e) {
-  if (e.target === document.getElementById('modal')) {
-    document.getElementById('modal').classList.remove('open');
-  }
-}
-
-function showToast(msg) {
-  const t = document.getElementById('toast');
-  t.textContent = msg;
-  t.classList.add('show');
-  setTimeout(() => t.classList.remove('show'), 3000);
-}
-
-async function analizarNuevo() {
-  const nombre = document.getElementById('input-nombre').value.trim();
-  const plan = document.getElementById('input-plan').value;
-  const tipo = document.getElementById('input-tipo').value;
-  const dias = parseInt(document.getElementById('input-dias').value) || 0;
-  const mensaje = document.getElementById('input-mensaje').value.trim();
-
-  if (!nombre || !mensaje) {
-    showToast(lang === 'es' ? 'Completá el nombre y el mensaje' : 'Fill in the name and message');
-    return;
-  }
-
-  const btn = document.getElementById('btn-analizar');
-  const btnText = document.getElementById('btn-analizar-text');
-  btn.disabled = true;
-  btnText.textContent = lang === 'es' ? 'Analizando...' : 'Analyzing...';
-
-  try {
-    // Paso 1: registrar cliente
-    const clienteRes = await fetch(`${API}/clientes`, {
-      method: 'POST',
-      headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify({nombre, plan_actual: plan}),
-    });
-    const clienteData = await clienteRes.json();
-    const clienteId = clienteData.cliente_id;
-
-    // Paso 2: analizar
-    const analisisRes = await fetch(`${API}/analizar/${clienteId}`, {
-      method: 'POST',
-      headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify({
-        interacciones: [{
-          tipo_interaccion: tipo,
-          texto_mensaje: mensaje,
-          dias_desde_ultima_conexion: dias,
-        }]
-      }),
-    });
-    const resultado = await analisisRes.json();
-
-    // Mostrar resultado
-    const rc = riskClass(resultado.nivel_riesgo);
-    const emoji = {'Crítico':'🔴','Alto':'🟠','Medio':'🟡','Bajo':'🟢'}[resultado.nivel_riesgo] || '⚪';
-    document.getElementById('resultado-nuevo').style.display = '';
-    document.getElementById('resultado-nuevo').innerHTML = `
+    const rc=riskClass(resultado.nivel_riesgo);
+    document.getElementById('resultado-nuevo').style.display='';
+    document.getElementById('resultado-nuevo').innerHTML=`
       <div class="section" style="margin:0">
-        <div style="padding:20px 24px;border-bottom:0.5px solid var(--color-border-tertiary);display:flex;align-items:center;gap:12px">
+        <div style="padding:20px 24px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:12px">
           <span class="badge ${rc}"><span class="badge-dot"></span>${riskLabel(resultado.nivel_riesgo)}</span>
-          <span style="font-size:20px;font-weight:700;color:var(--color-text-primary)">${resultado.probabilidad_churn_porcentaje}%</span>
-          <span style="font-size:13px;color:var(--color-text-secondary)">${lang==='es'?'probabilidad de cancelación':'churn probability'}</span>
+          <span style="font-size:20px;font-weight:700;color:var(--text)">${resultado.probabilidad_churn_porcentaje}%</span>
+          <span style="font-size:13px;color:var(--text2)">${lang==='es'?'probabilidad de cancelación':'churn probability'}</span>
         </div>
         <div style="padding:20px 24px">
-          <div style="font-size:10px;font-weight:600;color:var(--color-text-secondary);letter-spacing:.06em;text-transform:uppercase;margin-bottom:8px">${lang==='es'?'Causa detectada':'Detected cause'}</div>
-          <p style="font-size:14px;color:var(--color-text-primary);margin:0 0 20px;line-height:1.6">${resultado.razon_principal}</p>
-          <div style="font-size:10px;font-weight:600;color:var(--color-text-secondary);letter-spacing:.06em;text-transform:uppercase;margin-bottom:8px">${lang==='es'?'Acción recomendada':'Recommended action'}</div>
-          <div style="background:var(--color-background-secondary);border-left:3px solid var(--color-border-${rc==='critico'?'danger':rc==='alto'?'warning':'success'});padding:14px 16px;border-radius:0 var(--border-radius-md) var(--border-radius-md) 0;font-size:13px;color:var(--color-text-primary);line-height:1.6">${resultado.accion_recomendada_para_el_gestor}</div>
-          <div style="margin-top:16px;font-size:12px;color:var(--color-text-secondary)">${lang==='es'?'Confianza IA':'AI confidence'}: ${resultado.score_confianza}/10 · ${resultado.intentos_realizados} ${lang==='es'?'intento':'attempt'}${resultado.intentos_realizados>1?'s':''} · ${resultado.tiempo_procesamiento_segundos}s</div>
+          <div style="font-size:10px;font-weight:600;color:var(--text3);letter-spacing:.06em;text-transform:uppercase;margin-bottom:8px">${lang==='es'?'Causa detectada':'Detected cause'}</div>
+          <p style="font-size:14px;color:var(--text);margin:0 0 20px;line-height:1.6">${resultado.razon_principal}</p>
+          <div style="font-size:10px;font-weight:600;color:var(--text3);letter-spacing:.06em;text-transform:uppercase;margin-bottom:8px">${lang==='es'?'Acción recomendada':'Recommended action'}</div>
+          <div style="background:var(--bg2);border-left:3px solid ${rc==='critico'?'var(--red)':rc==='alto'?'var(--orange)':'var(--green)'};padding:14px 16px;border-radius:0 8px 8px 0;font-size:13px;color:var(--text);line-height:1.6">${resultado.accion_recomendada_para_el_gestor}</div>
+          <div style="margin-top:16px;font-size:12px;color:var(--text3)">${lang==='es'?'Confianza IA':'AI confidence'}: ${resultado.score_confianza}/10 · ${resultado.tiempo_procesamiento_segundos}s</div>
         </div>
       </div>`;
 
-    // Recargar lista de clientes
     await loadAll();
-    showToast(lang === 'es' ? 'Análisis completado' : 'Analysis complete');
-
-  } catch(e) {
-    showToast(lang === 'es' ? 'Error al analizar' : 'Analysis error');
-  } finally {
-    btn.disabled = false;
-    btnText.textContent = lang === 'es' ? 'Analizar riesgo' : 'Analyze risk';
+    showToast(lang==='es'?'Análisis completado':'Analysis complete');
+  }catch(e){
+    showToast(lang==='es'?'Error al analizar':'Analysis error');
+  }finally{
+    btn.disabled=false;
+    btnText.textContent=lang==='es'?'Analizar riesgo':'Analyze risk';
   }
 }
 
-/**
- * PostSale — Módulo de Scoring Histórico
- * ========================================
- * Gráfico de evolución del riesgo por cliente.
- * 
- * Integración:
- *   1. Copiá este contenido dentro del <script> de dashboard.html
- *   2. Agregá el botón de historial en la tabla de clientes
- *   3. El gráfico usa Chart.js (ya incluido via CDN)
- * 
- * Uso:
- *   abrirHistorial(clienteId) — abre el modal con el gráfico
- */
+// ═══════════════════════════════════════════
+// SCORING HISTÓRICO
+// ═══════════════════════════════════════════
 
-// ─── CONFIGURACIÓN DEL GRÁFICO ────────────────────────────────
+const COLORES_RIESGO={'Bajo':{bg:'#16a34a'},'Medio':{bg:'#ca8a04'},'Alto':{bg:'#ea580c'},'Crítico':{bg:'#dc2626'}};
+const NIVEL_A_NUMERO={'Bajo':1,'Medio':2,'Alto':3,'Crítico':4};
+const NUMERO_A_NIVEL={1:'Bajo',2:'Medio',3:'Alto',4:'Crítico'};
+let chartInstance=null;
 
-const COLORES_RIESGO = {
-  'Bajo':    { bg: '#16a34a', light: '#f0fdf4', border: '#bbf7d0' },
-  'Medio':   { bg: '#ca8a04', light: '#fefce8', border: '#fde68a' },
-  'Alto':    { bg: '#ea580c', light: '#fff7ed', border: '#fed7aa' },
-  'Crítico': { bg: '#dc2626', light: '#fef2f2', border: '#fecaca' },
-};
-
-const NIVEL_A_NUMERO = { 'Bajo': 1, 'Medio': 2, 'Alto': 3, 'Crítico': 4 };
-const NUMERO_A_NIVEL = { 1: 'Bajo', 2: 'Medio', 3: 'Alto', 4: 'Crítico' };
-
-let chartInstance = null;
-
-// ─── MODAL DE HISTORIAL ───────────────────────────────────────
-
-function crearModalHistorial() {
-  if (document.getElementById('modal-historial')) return;
-
-  const modal = document.createElement('div');
-  modal.id = 'modal-historial';
-  modal.style.cssText = `
-    display:none;position:fixed;inset:0;
-    background:rgba(0,0,0,0.3);z-index:300;
-    align-items:center;justify-content:center;
-    backdrop-filter:blur(2px);
-  `;
-
-  modal.innerHTML = `
-    <div style="
-      background:var(--color-background-primary);
-      border:1px solid var(--color-border-tertiary);
-      border-radius:14px;width:680px;max-width:95vw;
-      max-height:85vh;overflow-y:auto;
-      box-shadow:0 20px 60px rgba(0,0,0,0.15);
-    ">
-      <div style="
-        padding:20px 24px 16px;
-        border-bottom:1px solid var(--color-border-tertiary);
-        display:flex;justify-content:space-between;align-items:center;
-        position:sticky;top:0;background:var(--color-background-primary);
-        z-index:1;
-      ">
+function crearModalHistorial(){
+  if(document.getElementById('modal-historial'))return;
+  const modal=document.createElement('div');
+  modal.id='modal-historial';
+  modal.style.cssText='display:none;position:fixed;inset:0;background:rgba(0,0,0,0.3);z-index:300;align-items:center;justify-content:center;backdrop-filter:blur(2px);';
+  modal.innerHTML=`
+    <div style="background:var(--bg);border:1px solid var(--border);border-radius:14px;width:680px;max-width:95vw;max-height:85vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,0.15);">
+      <div style="padding:20px 24px 16px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;background:var(--bg);z-index:1;">
         <div>
-          <div id="hist-nombre" style="font-size:16px;font-weight:500;color:var(--color-text-primary)">—</div>
-          <div id="hist-plan" style="font-size:12px;color:var(--color-text-secondary);margin-top:2px"></div>
+          <div id="hist-nombre" style="font-size:16px;font-weight:600;color:var(--text)">—</div>
+          <div id="hist-plan" style="font-size:12px;color:var(--text3);margin-top:2px"></div>
         </div>
-        <button onclick="cerrarHistorial()" style="
-          width:28px;height:28px;border-radius:6px;
-          border:1px solid var(--color-border-tertiary);
-          background:var(--color-background-primary);
-          cursor:pointer;font-size:16px;color:var(--color-text-secondary);
-          display:flex;align-items:center;justify-content:center;
-        ">✕</button>
+        <button onclick="cerrarHistorial()" style="width:28px;height:28px;border-radius:6px;border:1px solid var(--border);background:var(--bg);cursor:pointer;font-size:16px;color:var(--text2);display:flex;align-items:center;justify-content:center;">✕</button>
       </div>
-
       <div style="padding:20px 24px">
-
-        <!-- MÉTRICAS RESUMEN -->
-        <div id="hist-metricas" style="
-          display:grid;grid-template-columns:repeat(4,1fr);
-          gap:10px;margin-bottom:24px;
-        "></div>
-
-        <!-- GRÁFICO -->
+        <div id="hist-metricas" style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:24px;"></div>
         <div style="margin-bottom:24px">
-          <div style="
-            font-size:10px;font-weight:600;color:var(--color-text-secondary);
-            letter-spacing:.06em;text-transform:uppercase;margin-bottom:12px;
-          " id="hist-titulo-grafico">Evolución del riesgo</div>
-          <div style="position:relative;height:220px;background:var(--color-background-secondary);border-radius:8px;padding:16px">
+          <div style="font-size:10px;font-weight:600;color:var(--text3);letter-spacing:.06em;text-transform:uppercase;margin-bottom:12px">Evolución del riesgo</div>
+          <div style="position:relative;height:220px;background:var(--bg2);border-radius:8px;padding:16px">
             <canvas id="canvas-historial"></canvas>
           </div>
         </div>
-
-        <!-- TENDENCIA -->
-        <div id="hist-tendencia-box" style="
-          padding:12px 16px;border-radius:8px;
-          border:1px solid var(--color-border-tertiary);
-          margin-bottom:24px;display:flex;align-items:center;gap:12px;
-        ">
+        <div id="hist-tendencia-box" style="padding:12px 16px;border-radius:8px;border:1px solid var(--border);margin-bottom:24px;display:flex;align-items:center;gap:12px;">
           <div id="hist-tendencia-icon" style="font-size:20px"></div>
           <div>
-            <div id="hist-tendencia-label" style="font-size:13px;font-weight:500;color:var(--color-text-primary)"></div>
-            <div id="hist-tendencia-sub" style="font-size:12px;color:var(--color-text-secondary)"></div>
+            <div id="hist-tendencia-label" style="font-size:13px;font-weight:500;color:var(--text)"></div>
+            <div id="hist-tendencia-sub" style="font-size:12px;color:var(--text2)"></div>
           </div>
         </div>
-
-        <!-- TABLA DE HISTORIAL -->
-        <div style="
-          font-size:10px;font-weight:600;color:var(--color-text-secondary);
-          letter-spacing:.06em;text-transform:uppercase;margin-bottom:10px;
-        " id="hist-titulo-tabla">Historial completo</div>
+        <div style="font-size:10px;font-weight:600;color:var(--text3);letter-spacing:.06em;text-transform:uppercase;margin-bottom:10px">Historial completo</div>
         <div id="hist-tabla"></div>
-
       </div>
     </div>`;
-
-  modal.addEventListener('click', (e) => {
-    if (e.target === modal) cerrarHistorial();
-  });
-
+  modal.addEventListener('click',(e)=>{if(e.target===modal)cerrarHistorial();});
   document.body.appendChild(modal);
 }
 
-// ─── ABRIR HISTORIAL ──────────────────────────────────────────
-
-async function abrirHistorial(clienteId) {
+async function abrirHistorial(clienteId){
   crearModalHistorial();
-
-  const modal = document.getElementById('modal-historial');
-  modal.style.display = 'flex';
-
-  // Cargar Chart.js si no está
-  if (!window.Chart) {
-    await new Promise((resolve) => {
-      const script = document.createElement('script');
-      script.src = 'https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js';
-      script.onload = resolve;
-      document.head.appendChild(script);
+  document.getElementById('modal-historial').style.display='flex';
+  if(!window.Chart){
+    await new Promise(resolve=>{
+      const s=document.createElement('script');
+      s.src='https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js';
+      s.onload=resolve;document.head.appendChild(s);
     });
   }
-
-  try {
-    const res = await fetch(`${API}/clientes/${clienteId}`);
-    const data = await res.json();
-    renderHistorial(data);
-  } catch (e) {
-    console.error('Error cargando historial:', e);
-  }
+  try{
+    const res=await fetch(`${API}/clientes/${clienteId}`);
+    renderHistorial(await res.json());
+  }catch(e){console.error(e);}
 }
 
-function cerrarHistorial() {
-  const modal = document.getElementById('modal-historial');
-  if (modal) modal.style.display = 'none';
-  if (chartInstance) {
-    chartInstance.destroy();
-    chartInstance = null;
-  }
+function cerrarHistorial(){
+  const m=document.getElementById('modal-historial');
+  if(m)m.style.display='none';
+  if(chartInstance){chartInstance.destroy();chartInstance=null;}
 }
 
-// ─── RENDERIZAR HISTORIAL ─────────────────────────────────────
+function renderHistorial(data){
+  const {cliente,historial=[],tendencia}=data;
+  document.getElementById('hist-nombre').textContent=cliente.nombre;
+  document.getElementById('hist-plan').textContent=`Plan ${cliente.plan_actual} · ${formatDate(cliente.fecha_registro)}`;
 
-function renderHistorial(data) {
-  const cliente = data.cliente;
-  const historial = data.historial || [];
-  const tendencia = data.tendencia;
+  const ultimo=historial[0];
+  const colorActual=COLORES_RIESGO[ultimo?.nivel_riesgo]||{bg:'#888'};
+  const maxProb=historial.length?Math.max(...historial.map(h=>h.probabilidad_churn_porcentaje)):0;
 
-  // Nombre y plan
-  document.getElementById('hist-nombre').textContent = cliente.nombre;
-  document.getElementById('hist-plan').textContent = `Plan ${cliente.plan_actual} · Registrado ${formatDate(cliente.fecha_registro)}`;
+  document.getElementById('hist-metricas').innerHTML=`
+    ${metricaCard(lang==='es'?'Riesgo actual':'Current risk',ultimo?riskLabel(ultimo.nivel_riesgo):'—',colorActual.bg)}
+    ${metricaCard(lang==='es'?'Prob. actual':'Current prob.',ultimo?`${ultimo.probabilidad_churn_porcentaje}%`:'—',colorActual.bg)}
+    ${metricaCard(lang==='es'?'Pico máximo':'Max peak',`${maxProb}%`,'#6b6b67')}
+    ${metricaCard(lang==='es'?'Análisis totales':'Total analyses',historial.length,'#6b6b67')}`;
 
-  // Métricas resumen
-  const ultimo = historial[0];
-  const rc = ultimo ? riskClass(ultimo.nivel_riesgo) : 'sin';
-  const colorActual = COLORES_RIESGO[ultimo?.nivel_riesgo] || { bg: '#888', light: '#f5f5f5', border: '#ddd' };
-
-  const maxProb = historial.length ? Math.max(...historial.map(h => h.probabilidad_churn_porcentaje)) : 0;
-  const minProb = historial.length ? Math.min(...historial.map(h => h.probabilidad_churn_porcentaje)) : 0;
-  const avgScore = historial.length ? Math.round(historial.reduce((a, h) => a + h.score_confianza, 0) / historial.length) : 0;
-
-  document.getElementById('hist-metricas').innerHTML = `
-    ${metricaCard('Riesgo actual', ultimo ? riskLabel(ultimo.nivel_riesgo) : '—', colorActual.bg)}
-    ${metricaCard('Prob. actual', ultimo ? `${ultimo.probabilidad_churn_porcentaje}%` : '—', colorActual.bg)}
-    ${metricaCard('Pico máximo', `${maxProb}%`, '#6b6b67')}
-    ${metricaCard('Análisis totales', historial.length, '#6b6b67')}
-  `;
-
-  // Tendencia
-  const tendencias = {
-    empeorando: { icon: '↑', label: lang === 'es' ? 'Riesgo en aumento' : 'Increasing risk', sub: lang === 'es' ? 'El cliente empeoró respecto al análisis anterior' : 'Client worsened vs previous analysis', color: '#dc2626', bg: '#fef2f2' },
-    mejorando:  { icon: '↓', label: lang === 'es' ? 'Riesgo en descenso' : 'Decreasing risk', sub: lang === 'es' ? 'El cliente mejoró respecto al análisis anterior' : 'Client improved vs previous analysis', color: '#16a34a', bg: '#f0fdf4' },
-    estable:    { icon: '→', label: lang === 'es' ? 'Riesgo estable' : 'Stable risk', sub: lang === 'es' ? 'Sin cambios respecto al análisis anterior' : 'No change vs previous analysis', color: '#ca8a04', bg: '#fefce8' },
-    sin_datos:  { icon: '○', label: lang === 'es' ? 'Sin datos suficientes' : 'Insufficient data', sub: lang === 'es' ? 'Se necesitan al menos 2 análisis para ver tendencia' : 'At least 2 analyses needed for trend', color: '#6b6b67', bg: '#f7f7f5' },
+  const tendencias={
+    empeorando:{icon:'↑',label:lang==='es'?'Riesgo en aumento':'Increasing risk',sub:lang==='es'?'El cliente empeoró respecto al análisis anterior':'Client worsened vs previous analysis',color:'#dc2626',bg:'#fef2f2'},
+    mejorando:{icon:'↓',label:lang==='es'?'Riesgo en descenso':'Decreasing risk',sub:lang==='es'?'El cliente mejoró respecto al análisis anterior':'Client improved vs previous analysis',color:'#16a34a',bg:'#f0fdf4'},
+    estable:{icon:'→',label:lang==='es'?'Riesgo estable':'Stable risk',sub:lang==='es'?'Sin cambios respecto al análisis anterior':'No change vs previous analysis',color:'#ca8a04',bg:'#fefce8'},
+    sin_datos:{icon:'○',label:lang==='es'?'Sin datos suficientes':'Insufficient data',sub:lang==='es'?'Se necesitan al menos 2 análisis':'At least 2 analyses needed',color:'#6b6b67',bg:'#f7f7f5'},
   };
+  const tend=tendencias[tendencia]||tendencias.sin_datos;
+  const tBox=document.getElementById('hist-tendencia-box');
+  tBox.style.background=tend.bg;tBox.style.borderColor=tend.color+'40';
+  document.getElementById('hist-tendencia-icon').textContent=tend.icon;
+  document.getElementById('hist-tendencia-label').textContent=tend.label;
+  document.getElementById('hist-tendencia-label').style.color=tend.color;
+  document.getElementById('hist-tendencia-sub').textContent=tend.sub;
 
-  const t = tendencias[tendencia] || tendencias.sin_datos;
-  const tBox = document.getElementById('hist-tendencia-box');
-  tBox.style.background = t.bg;
-  tBox.style.borderColor = t.color + '40';
-  document.getElementById('hist-tendencia-icon').textContent = t.icon;
-  document.getElementById('hist-tendencia-label').textContent = t.label;
-  document.getElementById('hist-tendencia-label').style.color = t.color;
-  document.getElementById('hist-tendencia-sub').textContent = t.sub;
-
-  // Gráfico
   renderGrafico(historial);
-
-  // Tabla
   renderTablaHistorial(historial);
 }
 
-function metricaCard(label, valor, color) {
-  return `
-    <div style="
-      background:var(--color-background-secondary);
-      border-radius:8px;padding:12px 14px;
-    ">
-      <div style="font-size:10px;font-weight:600;color:var(--color-text-secondary);letter-spacing:.05em;text-transform:uppercase;margin-bottom:6px">${label}</div>
-      <div style="font-size:20px;font-weight:700;color:${color};line-height:1">${valor}</div>
+function metricaCard(label,valor,color){
+  return`<div style="background:var(--bg2);border-radius:8px;padding:12px 14px"><div style="font-size:10px;font-weight:600;color:var(--text3);letter-spacing:.05em;text-transform:uppercase;margin-bottom:6px">${label}</div><div style="font-size:20px;font-weight:700;color:${color};line-height:1">${valor}</div></div>`;
+}
+
+function renderGrafico(historial){
+  if(chartInstance){chartInstance.destroy();chartInstance=null;}
+  const canvas=document.getElementById('canvas-historial');
+  if(!canvas||!window.Chart)return;
+  const datos=[...historial].reverse();
+  const labels=datos.map(h=>{try{return new Date(h.fecha).toLocaleDateString(lang==='es'?'es-AR':'en-US',{day:'2-digit',month:'short'});}catch{return h.fecha.slice(0,10);}});
+  const valores=datos.map(h=>NIVEL_A_NUMERO[h.nivel_riesgo]||0);
+  const probabilidades=datos.map(h=>h.probabilidad_churn_porcentaje);
+  const coloresPuntos=datos.map(h=>COLORES_RIESGO[h.nivel_riesgo]?.bg||'#888');
+  const isDark=window.matchMedia('(prefers-color-scheme: dark)').matches;
+  const gridColor=isDark?'rgba(255,255,255,0.06)':'rgba(0,0,0,0.06)';
+  const textColor=isDark?'#9b9b97':'#6b6b67';
+  chartInstance=new Chart(canvas,{
+    type:'line',
+    data:{labels,datasets:[
+      {label:lang==='es'?'Nivel de riesgo':'Risk level',data:valores,borderColor:'#1a1a18',backgroundColor:'transparent',pointBackgroundColor:coloresPuntos,pointBorderColor:coloresPuntos,pointRadius:6,pointHoverRadius:8,borderWidth:2,tension:0.3,yAxisID:'y'},
+      {label:lang==='es'?'Prob. churn %':'Churn prob %',data:probabilidades,borderColor:'#dc2626',backgroundColor:'rgba(220,38,38,0.06)',pointBackgroundColor:'#dc2626',pointBorderColor:'#dc2626',pointRadius:4,borderWidth:1.5,borderDash:[4,4],tension:0.3,yAxisID:'y2',fill:true},
+    ]},
+    options:{responsive:true,maintainAspectRatio:false,interaction:{mode:'index',intersect:false},
+      plugins:{legend:{position:'bottom',labels:{color:textColor,font:{size:11},boxWidth:12,padding:16}},
+        tooltip:{callbacks:{label:(ctx)=>ctx.datasetIndex===0?` ${NUMERO_A_NIVEL[ctx.parsed.y]||ctx.parsed.y}`:` ${ctx.parsed.y}%`}}},
+      scales:{
+        x:{grid:{color:gridColor},ticks:{color:textColor,font:{size:11}}},
+        y:{position:'left',min:0,max:5,grid:{color:gridColor},ticks:{color:textColor,font:{size:11},stepSize:1,callback:(v)=>NUMERO_A_NIVEL[v]||''}},
+        y2:{position:'right',min:0,max:100,grid:{display:false},ticks:{color:'#dc2626',font:{size:10},callback:(v)=>`${v}%`}},
+      }
+    }
+  });
+}
+
+function renderTablaHistorial(historial){
+  if(!historial.length){document.getElementById('hist-tabla').innerHTML=`<div style="padding:24px;text-align:center;color:var(--text3);font-size:13px">${lang==='es'?'Sin análisis registrados':'No analyses recorded'}</div>`;return;}
+  const filas=historial.map(h=>{
+    const rc=riskClass(h.nivel_riesgo);
+    const dots=Array.from({length:10},(_,i)=>`<div style="width:6px;height:6px;border-radius:50%;background:${i<h.score_confianza?'var(--text)':'var(--bg3)'};flex-shrink:0"></div>`).join('');
+    return`<tr style="border-bottom:1px solid var(--border)">
+      <td style="padding:10px 14px"><span style="font-size:11px;font-family:'JetBrains Mono',monospace;color:var(--text3)">${formatDate(h.fecha)}</span></td>
+      <td style="padding:10px 14px"><span class="badge ${rc}"><span class="badge-dot"></span>${riskLabel(h.nivel_riesgo)}</span></td>
+      <td style="padding:10px 14px;font-size:13px;font-weight:600;color:${COLORES_RIESGO[h.nivel_riesgo]?.bg||'#888'}">${h.probabilidad_churn_porcentaje}%</td>
+      <td style="padding:10px 14px"><div style="display:flex;gap:2px;align-items:center">${dots}</div></td>
+      <td style="padding:10px 14px;font-size:12px;color:var(--text2);max-width:200px"><div style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${h.razon_principal}</div></td>
+      ${h.requiere_revision_manual?`<td style="padding:10px 14px"><span style="font-size:10px;font-weight:600;color:var(--yellow);background:var(--yellow-bg);padding:2px 7px;border-radius:20px">⚠ Rev.</span></td>`:'<td></td>'}
+    </tr>`;
+  }).join('');
+  document.getElementById('hist-tabla').innerHTML=`
+    <table style="width:100%;border-collapse:collapse;border:1px solid var(--border);border-radius:8px;overflow:hidden">
+      <thead><tr style="background:var(--bg2)">
+        <th style="padding:8px 14px;text-align:left;font-size:10px;font-weight:600;color:var(--text3);letter-spacing:.05em;text-transform:uppercase">${lang==='es'?'Fecha':'Date'}</th>
+        <th style="padding:8px 14px;text-align:left;font-size:10px;font-weight:600;color:var(--text3);letter-spacing:.05em;text-transform:uppercase">${lang==='es'?'Riesgo':'Risk'}</th>
+        <th style="padding:8px 14px;text-align:left;font-size:10px;font-weight:600;color:var(--text3);letter-spacing:.05em;text-transform:uppercase">${lang==='es'?'Prob.':'Prob.'}</th>
+        <th style="padding:8px 14px;text-align:left;font-size:10px;font-weight:600;color:var(--text3);letter-spacing:.05em;text-transform:uppercase">${lang==='es'?'Confianza':'Confidence'}</th>
+        <th style="padding:8px 14px;text-align:left;font-size:10px;font-weight:600;color:var(--text3);letter-spacing:.05em;text-transform:uppercase">${lang==='es'?'Causa':'Cause'}</th>
+        <th></th>
+      </tr></thead>
+      <tbody>${filas}</tbody>
+    </table>`;
+}
+
+// ═══════════════════════════════════════════
+// SISTEMA DE TAREAS
+// ═══════════════════════════════════════════
+
+async function cargarTareas(estado='pendiente'){
+  try{
+    const url=estado?`${API}/tareas?estado=${estado}`:`${API}/tareas`;
+    const res=await fetch(url);
+    if(!res.ok)throw new Error();
+    return await res.json();
+  }catch{return[];}
+}
+
+async function cargarResumenTareas(){
+  try{const res=await fetch(`${API}/tareas/resumen`);if(!res.ok)throw new Error();return await res.json();}
+  catch{return null;}
+}
+
+async function filtrarTareas(){
+  const estado=document.getElementById('filtro-tareas').value;
+  const tareas=await cargarTareas(estado);
+  renderTareas(tareas);
+}
+
+async function renderVistaTareas(){
+  const[tareas,resumen]=await Promise.all([cargarTareas('pendiente'),cargarResumenTareas()]);
+  if(resumen)renderResumenBar(resumen);
+  renderTareas(tareas);
+  actualizarBadgeTareas(resumen?.pendientes||0);
+}
+
+function renderResumenBar(resumen){
+  const bar=document.getElementById('tareas-resumen-bar');
+  if(!bar)return;
+  bar.innerHTML=`
+    ${resumenItem(lang==='es'?'Pendientes':'Pending',resumen.pendientes,'var(--yellow)')}
+    ${resumenItem(lang==='es'?'En curso':'In progress',resumen.en_curso,'var(--blue)')}
+    ${resumenItem(lang==='es'?'Completadas':'Completed',resumen.completadas,'var(--green)')}
+    ${resumenItem(lang==='es'?'Tasa resolución':'Resolution rate',resumen.tasa_resolucion+'%','var(--text)')}`;
+}
+
+function resumenItem(label,valor,color){
+  return`<div style="text-align:center"><div style="font-size:22px;font-weight:700;color:${color};line-height:1">${valor}</div><div style="font-size:11px;color:var(--text3);margin-top:4px">${label}</div></div>`;
+}
+
+function renderTareas(tareas){
+  const lista=document.getElementById('tareas-lista');
+  const count=document.getElementById('tareas-count');
+  if(!lista)return;
+  if(count)count.textContent=tareas.length;
+  if(!tareas.length){lista.innerHTML=`<div class="empty"><div class="empty-icon">✓</div>${lang==='es'?'No hay tareas en este estado':'No tasks in this state'}</div>`;return;}
+  lista.innerHTML=tareas.map(tarea=>renderTareaCard(tarea)).join('');
+}
+
+function renderTareaCard(tarea){
+  const rc=riskClass(tarea.nivel_riesgo);
+  const estadoConfig={
+    pendiente:{label:lang==='es'?'Pendiente':'Pending',color:'var(--yellow)',bg:'var(--yellow-bg)'},
+    en_curso:{label:lang==='es'?'En curso':'In progress',color:'var(--blue)',bg:'var(--blue-bg)'},
+    completada:{label:lang==='es'?'Completada':'Completed',color:'var(--green)',bg:'var(--green-bg)'},
+    descartada:{label:lang==='es'?'Descartada':'Discarded',color:'var(--text3)',bg:'var(--bg2)'},
+  };
+  const est=estadoConfig[tarea.estado]||estadoConfig.pendiente;
+  const borderColor=rc==='critico'?'var(--red)':rc==='alto'?'var(--orange)':'var(--green)';
+  return`
+    <div style="border-bottom:0.5px solid var(--border);padding:20px" id="tarea-${tarea.id}">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:12px">
+        <div>
+          <div style="font-size:14px;font-weight:600;color:var(--text);margin-bottom:4px">${tarea.cliente_nombre}</div>
+          <div style="display:flex;gap:8px;align-items:center">
+            <span class="badge ${rc}"><span class="badge-dot"></span>${riskLabel(tarea.nivel_riesgo)}</span>
+            <span style="font-size:11px;font-weight:600;color:${est.color};background:${est.bg};padding:2px 8px;border-radius:20px">${est.label}</span>
+            <span style="font-size:11px;color:var(--text3)">${formatDate(tarea.fecha_creacion)}</span>
+          </div>
+        </div>
+        <div style="display:flex;gap:6px">
+          ${tarea.estado==='pendiente'?`<button onclick="cambiarEstadoTarea(${tarea.id},'en_curso')" style="font-size:11px;padding:4px 10px;border-radius:6px;border:0.5px solid var(--blue-border);background:var(--blue-bg);color:var(--blue);cursor:pointer">${lang==='es'?'Iniciar':'Start'}</button>`:''}
+          ${tarea.estado==='en_curso'?`<button onclick="abrirFormularioCierre(${tarea.id})" style="font-size:11px;padding:4px 10px;border-radius:6px;border:0.5px solid var(--green-border);background:var(--green-bg);color:var(--green);cursor:pointer">${lang==='es'?'Completar':'Complete'}</button>`:''}
+          ${['pendiente','en_curso'].includes(tarea.estado)?`<button onclick="cambiarEstadoTarea(${tarea.id},'descartada')" style="font-size:11px;padding:4px 10px;border-radius:6px;border:0.5px solid var(--border);background:transparent;color:var(--text3);cursor:pointer">${lang==='es'?'Descartar':'Discard'}</button>`:''}
+        </div>
+      </div>
+      <div style="background:var(--bg2);border-left:3px solid ${borderColor};padding:10px 14px;border-radius:0 6px 6px 0;font-size:13px;color:var(--text);line-height:1.6;margin-bottom:${tarea.accion_tomada?'12px':'0'}">
+        <div style="font-size:10px;font-weight:600;color:var(--text3);letter-spacing:.05em;text-transform:uppercase;margin-bottom:6px">${lang==='es'?'Acción sugerida por IA':'AI suggested action'}</div>
+        ${tarea.accion_sugerida}
+      </div>
+      ${tarea.accion_tomada?`<div style="padding:10px 14px;background:var(--green-bg);border-radius:6px;font-size:13px;margin-bottom:8px"><div style="font-size:10px;font-weight:600;color:var(--green);letter-spacing:.05em;text-transform:uppercase;margin-bottom:4px">${lang==='es'?'Acción tomada':'Action taken'}</div><div style="color:var(--text)">${tarea.accion_tomada}</div></div>`:''}
+      ${tarea.resultado_real?`<div style="padding:10px 14px;background:var(--bg2);border-radius:6px;font-size:13px"><div style="font-size:10px;font-weight:600;color:var(--text3);letter-spacing:.05em;text-transform:uppercase;margin-bottom:4px">${lang==='es'?'Resultado real':'Actual result'}</div><div style="color:var(--text)">${tarea.resultado_real}</div></div>`:''}
+      ${tarea.gestor?`<div style="margin-top:8px;font-size:11px;color:var(--text3)">${lang==='es'?'Gestor':'Manager'}: <strong>${tarea.gestor}</strong>${tarea.fecha_cierre?` · ${lang==='es'?'Cerrada':'Closed'}: ${formatDate(tarea.fecha_cierre)}`:''}</div>`:''}
+      <div id="form-cierre-${tarea.id}" style="display:none;margin-top:16px;padding:16px;background:var(--bg2);border-radius:8px;border:0.5px solid var(--border)">
+        <div style="font-size:12px;font-weight:600;color:var(--text2);margin-bottom:10px">${lang==='es'?'Registrar resultado':'Record result'}</div>
+        <input type="text" id="gestor-${tarea.id}" placeholder="${lang==='es'?'Tu nombre':'Your name'}" style="width:100%;margin-bottom:8px;font-size:13px">
+        <textarea id="accion-${tarea.id}" rows="2" placeholder="${lang==='es'?'¿Qué hiciste exactamente?':'What did you do exactly?'}" style="width:100%;margin-bottom:8px;font-size:13px;padding:8px 12px;border:0.5px solid var(--border);border-radius:6px;background:var(--bg);color:var(--text);resize:vertical;font-family:'Inter',sans-serif"></textarea>
+        <textarea id="resultado-${tarea.id}" rows="2" placeholder="${lang==='es'?'¿Cuál fue el resultado?':'What was the result?'}" style="width:100%;margin-bottom:12px;font-size:13px;padding:8px 12px;border:0.5px solid var(--border);border-radius:6px;background:var(--bg);color:var(--text);resize:vertical;font-family:'Inter',sans-serif"></textarea>
+        <div style="display:flex;gap:8px">
+          <button onclick="completarTarea(${tarea.id})" style="flex:1;padding:8px;font-size:12px;font-weight:500;border-radius:6px;border:0.5px solid var(--green-border);background:var(--green-bg);color:var(--green);cursor:pointer">${lang==='es'?'Guardar y completar':'Save and complete'}</button>
+          <button onclick="document.getElementById('form-cierre-${tarea.id}').style.display='none'" style="padding:8px 14px;font-size:12px;border-radius:6px;border:0.5px solid var(--border);background:transparent;color:var(--text3);cursor:pointer">${lang==='es'?'Cancelar':'Cancel'}</button>
+        </div>
+      </div>
     </div>`;
 }
 
-// ─── GRÁFICO DE EVOLUCIÓN ─────────────────────────────────────
-
-function renderGrafico(historial) {
-  if (chartInstance) {
-    chartInstance.destroy();
-    chartInstance = null;
-  }
-
-  const canvas = document.getElementById('canvas-historial');
-  if (!canvas || !window.Chart) return;
-
-  // Ordenar cronológicamente (más antiguo primero)
-  const datos = [...historial].reverse();
-
-  const labels = datos.map(h => {
-    try {
-      const d = new Date(h.fecha);
-      return d.toLocaleDateString(lang === 'es' ? 'es-AR' : 'en-US', { day: '2-digit', month: 'short' });
-    } catch { return h.fecha.slice(0, 10); }
-  });
-
-  const valores = datos.map(h => NIVEL_A_NUMERO[h.nivel_riesgo] || 0);
-  const probabilidades = datos.map(h => h.probabilidad_churn_porcentaje);
-
-  const coloresPuntos = datos.map(h => COLORES_RIESGO[h.nivel_riesgo]?.bg || '#888');
-
-  const isDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-  const gridColor = isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.06)';
-  const textColor = isDark ? '#9b9b97' : '#6b6b67';
-
-  chartInstance = new Chart(canvas, {
-    type: 'line',
-    data: {
-      labels,
-      datasets: [
-        {
-          label: lang === 'es' ? 'Nivel de riesgo' : 'Risk level',
-          data: valores,
-          borderColor: '#1a1a18',
-          backgroundColor: 'transparent',
-          pointBackgroundColor: coloresPuntos,
-          pointBorderColor: coloresPuntos,
-          pointRadius: 6,
-          pointHoverRadius: 8,
-          borderWidth: 2,
-          tension: 0.3,
-          yAxisID: 'y',
-        },
-        {
-          label: lang === 'es' ? 'Prob. churn %' : 'Churn prob %',
-          data: probabilidades,
-          borderColor: '#dc2626',
-          backgroundColor: 'rgba(220,38,38,0.06)',
-          pointBackgroundColor: '#dc2626',
-          pointBorderColor: '#dc2626',
-          pointRadius: 4,
-          borderWidth: 1.5,
-          borderDash: [4, 4],
-          tension: 0.3,
-          yAxisID: 'y2',
-          fill: true,
-        },
-      ],
-    },
-    options: {
-      responsive: true,
-      maintainAspectRatio: false,
-      interaction: { mode: 'index', intersect: false },
-      plugins: {
-        legend: {
-          position: 'bottom',
-          labels: {
-            color: textColor,
-            font: { size: 11 },
-            boxWidth: 12,
-            padding: 16,
-          },
-        },
-        tooltip: {
-          callbacks: {
-            label: (ctx) => {
-              if (ctx.datasetIndex === 0) {
-                return ` ${NUMERO_A_NIVEL[ctx.parsed.y] || ctx.parsed.y}`;
-              }
-              return ` ${ctx.parsed.y}%`;
-            },
-          },
-        },
-      },
-      scales: {
-        x: {
-          grid: { color: gridColor },
-          ticks: { color: textColor, font: { size: 11 } },
-        },
-        y: {
-          position: 'left',
-          min: 0, max: 5,
-          grid: { color: gridColor },
-          ticks: {
-            color: textColor,
-            font: { size: 11 },
-            stepSize: 1,
-            callback: (v) => NUMERO_A_NIVEL[v] || '',
-          },
-        },
-        y2: {
-          position: 'right',
-          min: 0, max: 100,
-          grid: { display: false },
-          ticks: {
-            color: '#dc2626',
-            font: { size: 10 },
-            callback: (v) => `${v}%`,
-          },
-        },
-      },
-    },
-  });
+async function cambiarEstadoTarea(id,nuevoEstado){
+  try{
+    await fetch(`${API}/tareas/${id}`,{method:'PATCH',headers:{'Content-Type':'application/json'},body:JSON.stringify({estado:nuevoEstado})});
+    showToast(lang==='es'?'Tarea actualizada':'Task updated');
+    await renderVistaTareas();
+  }catch{showToast(lang==='es'?'Error actualizando tarea':'Error updating task');}
 }
 
-// ─── TABLA DE HISTORIAL ───────────────────────────────────────
+function abrirFormularioCierre(id){
+  const form=document.getElementById(`form-cierre-${id}`);
+  if(form)form.style.display=form.style.display==='none'?'':'none';
+}
 
-function renderTablaHistorial(historial) {
-  if (!historial.length) {
-    document.getElementById('hist-tabla').innerHTML = `
-      <div style="padding:24px;text-align:center;color:var(--color-text-secondary);font-size:13px">
-        ${lang === 'es' ? 'Sin análisis registrados' : 'No analyses recorded'}
-      </div>`;
-    return;
-  }
+async function completarTarea(id){
+  const gestor=document.getElementById(`gestor-${id}`)?.value?.trim();
+  const accion=document.getElementById(`accion-${id}`)?.value?.trim();
+  const resultado=document.getElementById(`resultado-${id}`)?.value?.trim();
+  if(!accion||!resultado){showToast(lang==='es'?'Completá la acción y el resultado':'Fill in the action and result');return;}
+  try{
+    await fetch(`${API}/tareas/${id}`,{method:'PATCH',headers:{'Content-Type':'application/json'},body:JSON.stringify({estado:'completada',accion_tomada:accion,resultado_real:resultado,gestor:gestor||'Gestor'})});
+    showToast(lang==='es'?'✓ Tarea completada':'✓ Task completed');
+    await renderVistaTareas();
+  }catch{showToast(lang==='es'?'Error completando tarea':'Error completing task');}
+}
 
-  const filas = historial.map(h => {
-    const rc = riskClass(h.nivel_riesgo);
-    const dots = Array.from({length: 10}, (_, i) =>
-      `<div style="width:6px;height:6px;border-radius:50%;background:${i < h.score_confianza ? 'var(--color-text-primary)' : 'var(--color-border-tertiary)'};flex-shrink:0"></div>`
-    ).join('');
-
-    return `
-      <tr style="border-bottom:1px solid var(--color-border-tertiary)">
-        <td style="padding:10px 14px">
-          <span style="font-size:11px;font-family:var(--font-mono);color:var(--color-text-secondary)">${formatDate(h.fecha)}</span>
-        </td>
-        <td style="padding:10px 14px">
-          <span class="badge ${rc}"><span class="badge-dot"></span>${riskLabel(h.nivel_riesgo)}</span>
-        </td>
-        <td style="padding:10px 14px;font-size:13px;font-weight:600;color:${COLORES_RIESGO[h.nivel_riesgo]?.bg || '#888'}">
-          ${h.probabilidad_churn_porcentaje}%
-        </td>
-        <td style="padding:10px 14px">
-          <div style="display:flex;gap:2px;align-items:center">${dots}</div>
-        </td>
-        <td style="padding:10px 14px;font-size:12px;color:var(--color-text-secondary);max-width:200px">
-          <div style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${h.razon_principal}</div>
-        </td>
-        ${h.requiere_revision_manual ? `<td style="padding:10px 14px"><span style="font-size:10px;font-weight:600;color:var(--color-text-warning);background:var(--color-background-warning);padding:2px 7px;border-radius:20px">⚠ Rev.</span></td>` : '<td></td>'}
-      </tr>`;
-  }).join('');
-
-  document.getElementById('hist-tabla').innerHTML = `
-    <table style="width:100%;border-collapse:collapse;border:1px solid var(--color-border-tertiary);border-radius:8px;overflow:hidden">
-      <thead>
-        <tr style="background:var(--color-background-secondary)">
-          <th style="padding:8px 14px;text-align:left;font-size:10px;font-weight:600;color:var(--color-text-secondary);letter-spacing:.05em;text-transform:uppercase">${lang==='es'?'Fecha':'Date'}</th>
-          <th style="padding:8px 14px;text-align:left;font-size:10px;font-weight:600;color:var(--color-text-secondary);letter-spacing:.05em;text-transform:uppercase">${lang==='es'?'Riesgo':'Risk'}</th>
-          <th style="padding:8px 14px;text-align:left;font-size:10px;font-weight:600;color:var(--color-text-secondary);letter-spacing:.05em;text-transform:uppercase">${lang==='es'?'Prob.':'Prob.'}</th>
-          <th style="padding:8px 14px;text-align:left;font-size:10px;font-weight:600;color:var(--color-text-secondary);letter-spacing:.05em;text-transform:uppercase">${lang==='es'?'Confianza':'Confidence'}</th>
-          <th style="padding:8px 14px;text-align:left;font-size:10px;font-weight:600;color:var(--color-text-secondary);letter-spacing:.05em;text-transform:uppercase">${lang==='es'?'Causa':'Cause'}</th>
-          <th></th>
-        </tr>
-      </thead>
-      <tbody>${filas}</tbody>
-    </table>`;
+function actualizarBadgeTareas(cantidad){
+  const badge=document.getElementById('badge-tareas');
+  if(!badge)return;
+  badge.textContent=cantidad;
+  badge.style.display=cantidad>0?'inline-block':'none';
 }
 
 // Init
 updateTexts();
 loadAll();
-setInterval(loadAll, 30000);
+setInterval(loadAll,30000);
 </script>
 </body>
 </html>
