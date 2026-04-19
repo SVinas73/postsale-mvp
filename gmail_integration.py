@@ -62,18 +62,11 @@ GMAIL_CONFIG = {
 # ---------------------------------------------------------------------------
 
 def get_google_flow() -> Flow:
-    """
-    Crea el flujo OAuth2 de Google usando las variables de entorno.
-    No requiere archivo JSON — usa CLIENT_ID y CLIENT_SECRET directamente.
-    """
     client_id = os.getenv("GOOGLE_CLIENT_ID")
     client_secret = os.getenv("GOOGLE_CLIENT_SECRET")
 
     if not client_id or not client_secret:
-        raise ValueError(
-            "Falta GOOGLE_CLIENT_ID o GOOGLE_CLIENT_SECRET. "
-            "Configurá las variables de entorno."
-        )
+        raise ValueError("Falta GOOGLE_CLIENT_ID o GOOGLE_CLIENT_SECRET.")
 
     client_config = {
         "web": {
@@ -90,8 +83,8 @@ def get_google_flow() -> Flow:
         scopes=GMAIL_SCOPES,
         redirect_uri="http://localhost:8000/gmail/callback",
     )
+    flow.code_verifier = None
     return flow
-
 
 def get_gmail_service():
     """
@@ -376,14 +369,15 @@ def gmail_autorizar():
 # --- GET /gmail/callback — recibir el código de Google ---
 
 @app.get("/gmail/callback")
-def gmail_callback(code: str):
-    """
-    Google redirige aquí después de que el gestor autoriza.
-    Guarda el token para uso futuro.
-    """
+def gmail_callback(code: str, request: Request):
     try:
+        import os
+        os.environ["OAUTHLIB_INSECURE_TRANSPORT"] = "1"
         flow = get_google_flow()
-        flow.fetch_token(code=code)
+        flow.fetch_token(
+            code=code,
+            authorization_response=str(request.url),
+        )
         creds = flow.credentials
 
         with open("gmail_token.json", "w") as f:

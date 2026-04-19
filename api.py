@@ -723,7 +723,7 @@ def get_session():
 # APP FASTAPI
 # ---------------------------------------------------------------------------
 
-from fastapi import Depends, FastAPI, HTTPException
+from fastapi import Depends, FastAPI, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI(
@@ -1217,32 +1217,23 @@ def gmail_autorizar():
         flow = get_google_flow()
         auth_url, _ = flow.authorization_url(
             access_type="offline",
-            include_granted_scopes="true",
             prompt="consent",
         )
         return RedirectResponse(url=auth_url)
     except ValueError as e:
         raise HTTPException(status_code=500, detail=str(e))
 
-
-# --- GET /gmail/callback ---
-
 @app.get("/gmail/callback")
-def gmail_callback(code: str):
+def gmail_callback(code: str, request: Request):
+    os.environ["OAUTHLIB_INSECURE_TRANSPORT"] = "1"
     try:
         flow = get_google_flow()
         flow.fetch_token(code=code)
         creds = flow.credentials
         with open("gmail_token.json", "w") as f:
             f.write(creds.to_json())
-        log.info("Gmail autorizado exitosamente")
-        return {
-            "estado": "ok",
-            "mensaje": "Gmail conectado exitosamente. Ya podés usar /gmail/analizar",
-            "siguiente_paso": "/gmail/analizar",
-        }
+        return {"estado": "ok", "mensaje": "Gmail conectado. Usá POST /gmail/analizar"}
     except Exception as e:
-        log.error(f"Error en callback de Gmail: {e}")
         raise HTTPException(status_code=400, detail=f"Error autorizando Gmail: {e}")
 
 
