@@ -49,6 +49,10 @@ GMAIL_SCOPES = [
 ]
 
 GMAIL_TOKEN_FILE = "gmail_token.json"
+GMAIL_REDIRECT_URI = os.getenv(
+    "GOOGLE_REDIRECT_URI",
+    "http://localhost:8000/gmail/callback",
+)
 
 GMAIL_CONFIG = {
     "max_emails_por_cliente": 10,    # últimos N emails por remitente
@@ -61,30 +65,73 @@ GMAIL_CONFIG = {
 # AUTENTICACIÓN OAuth2
 # ---------------------------------------------------------------------------
 
-def get_google_flow() -> Flow:
+# google-auth-oauthlib >=1.0 enables PKCE by default: authorization_url() generates
+# a code_verifier on the Flow instance and embeds the matching code_challenge in
+# the URL. The token exchange MUST send back the same code_verifier, so we have
+# to keep it across the autorizar -> callback round-trip. We key by `state`,
+# which Google echoes back to the callback.
+_oauth_pending: dict[str, str] = {}
+
+
+def _build_client_config() -> dict:
     client_id = os.getenv("GOOGLE_CLIENT_ID")
     client_secret = os.getenv("GOOGLE_CLIENT_SECRET")
 
     if not client_id or not client_secret:
         raise ValueError("Falta GOOGLE_CLIENT_ID o GOOGLE_CLIENT_SECRET.")
 
-    client_config = {
+    return {
         "web": {
             "client_id": client_id,
             "client_secret": client_secret,
             "auth_uri": "https://accounts.google.com/o/oauth2/auth",
             "token_uri": "https://oauth2.googleapis.com/token",
-            "redirect_uris": ["http://localhost:8000/gmail/callback"],
+            "redirect_uris": [GMAIL_REDIRECT_URI],
         }
     }
 
-    flow = Flow.from_client_config(
-        client_config,
+
+def get_google_flow(state: Optional[str] = None) -> Flow:
+    """Build a Flow. Pass `state` in the callback so the existing OAuth state
+    is reused (CSRF check)."""
+    return Flow.from_client_config(
+        _build_client_config(),
         scopes=GMAIL_SCOPES,
-        redirect_uri="http://localhost:8000/gmail/callback",
+        redirect_uri=GMAIL_REDIRECT_URI,
+        state=state,
     )
-    flow.code_verifier = None
-    return flow
+
+
+def start_oauth_flow() -> str:
+    """Generate the Google authorization URL and stash the PKCE verifier
+    keyed by `state`. Returns the URL to redirect the user to."""
+    flow = get_google_flow()
+    auth_url, state = flow.authorization_url(
+        access_type="offline",
+        include_granted_scopes="true",
+        prompt="consent",
+    )
+    _oauth_pending[state] = flow.code_verifier
+    return auth_url
+
+
+def finish_oauth_flow(code: str, state: str) -> Credentials:
+    """Exchange the authorization code for credentials and persist the token.
+    Looks up the PKCE verifier saved in start_oauth_flow."""
+    code_verifier = _oauth_pending.pop(state, None)
+    if code_verifier is None:
+        raise ValueError(
+            "Estado OAuth desconocido o expirado. Reiniciá el flujo en /gmail/autorizar."
+        )
+
+    flow = get_google_flow(state=state)
+    flow.code_verifier = code_verifier
+    flow.fetch_token(code=code)
+
+    creds = flow.credentials
+    with open(GMAIL_TOKEN_FILE, "w") as f:
+        f.write(creds.to_json())
+    return creds
 
 def get_gmail_service():
     """
@@ -339,7 +386,8 @@ ENDPOINTS_GMAIL = '''
 # GMAIL INTEGRATION — agregar estos imports al inicio de api.py:
 #
 # from gmail_integration import (
-#     get_google_flow, get_gmail_service, gmail_esta_autorizado,
+#     start_oauth_flow, finish_oauth_flow,
+#     get_gmail_service, gmail_esta_autorizado,
 #     obtener_emails_clientes, analizar_emails_cliente,
 # )
 # ═══════════════════════════════════════════════════════════════
@@ -354,13 +402,9 @@ def gmail_autorizar():
     El gestor hace clic en este link y autoriza PostSale.
     """
     from fastapi.responses import RedirectResponse
+    os.environ.setdefault("OAUTHLIB_INSECURE_TRANSPORT", "1")
     try:
-        flow = get_google_flow()
-        auth_url, _ = flow.authorization_url(
-            access_type="offline",
-            include_granted_scopes="true",
-            prompt="consent",
-        )
+        auth_url = start_oauth_flow()
         return RedirectResponse(url=auth_url)
     except ValueError as e:
         raise HTTPException(status_code=500, detail=str(e))
@@ -369,20 +413,10 @@ def gmail_autorizar():
 # --- GET /gmail/callback — recibir el código de Google ---
 
 @app.get("/gmail/callback")
-def gmail_callback(code: str, request: Request):
+def gmail_callback(code: str, state: str):
+    os.environ.setdefault("OAUTHLIB_INSECURE_TRANSPORT", "1")
     try:
-        import os
-        os.environ["OAUTHLIB_INSECURE_TRANSPORT"] = "1"
-        flow = get_google_flow()
-        flow.fetch_token(
-            code=code,
-            authorization_response=str(request.url),
-        )
-        creds = flow.credentials
-
-        with open("gmail_token.json", "w") as f:
-            f.write(creds.to_json())
-
+        finish_oauth_flow(code=code, state=state)
         log.info("Gmail autorizado exitosamente")
         return {
             "estado": "ok",
@@ -390,7 +424,7 @@ def gmail_callback(code: str, request: Request):
             "siguiente_paso": "/gmail/analizar",
         }
     except Exception as e:
-        log.error(f"Error en callback de Gmail: {e}")
+        log.exception("Error en callback de Gmail")
         raise HTTPException(status_code=400, detail=f"Error autorizando Gmail: {e}")
 
 
@@ -570,7 +604,8 @@ INSTRUCCIONES DE INTEGRACIÓN EN api.py:
 1. Agregar imports al inicio de api.py:
 
    from gmail_integration import (
-       get_google_flow, get_gmail_service, gmail_esta_autorizado,
+       start_oauth_flow, finish_oauth_flow,
+       get_gmail_service, gmail_esta_autorizado,
        obtener_emails_clientes, analizar_emails_cliente,
    )
 

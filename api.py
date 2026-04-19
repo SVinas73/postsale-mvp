@@ -42,7 +42,8 @@ from sqlmodel import Field as SQLField
 from sqlmodel import Session, SQLModel, create_engine, select
 
 from gmail_integration import (
-    get_google_flow, get_gmail_service, gmail_esta_autorizado,
+    start_oauth_flow, finish_oauth_flow,
+    get_gmail_service, gmail_esta_autorizado,
     obtener_emails_clientes, analizar_emails_cliente,
 )
 
@@ -1213,27 +1214,22 @@ def descartar_tarea(
 @app.get("/gmail/autorizar")
 def gmail_autorizar():
     from fastapi.responses import RedirectResponse
+    os.environ.setdefault("OAUTHLIB_INSECURE_TRANSPORT", "1")
     try:
-        flow = get_google_flow()
-        auth_url, _ = flow.authorization_url(
-            access_type="offline",
-            prompt="consent",
-        )
+        auth_url = start_oauth_flow()
         return RedirectResponse(url=auth_url)
     except ValueError as e:
         raise HTTPException(status_code=500, detail=str(e))
 
+
 @app.get("/gmail/callback")
-def gmail_callback(code: str, request: Request):
-    os.environ["OAUTHLIB_INSECURE_TRANSPORT"] = "1"
+def gmail_callback(code: str, state: str):
+    os.environ.setdefault("OAUTHLIB_INSECURE_TRANSPORT", "1")
     try:
-        flow = get_google_flow()
-        flow.fetch_token(code=code)
-        creds = flow.credentials
-        with open("gmail_token.json", "w") as f:
-            f.write(creds.to_json())
+        finish_oauth_flow(code=code, state=state)
         return {"estado": "ok", "mensaje": "Gmail conectado. Usá POST /gmail/analizar"}
     except Exception as e:
+        log.exception("Error en callback de Gmail")
         raise HTTPException(status_code=400, detail=f"Error autorizando Gmail: {e}")
 
 
